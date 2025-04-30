@@ -1,0 +1,28 @@
+{
+  "name": "cro-vote-webapp",
+  "version": "1.0.0",
+  "description": "Vote app",
+  "keywords": [
+    "voting",
+    "security",
+    "modules"
+  ],
+  "homepage": "https://github.com/jpobi22/cro-vote-webapp#readme",
+  "bugs": {
+    "url": "https://github.com/jpobi22/cro-vote-webapp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpobi22/cro-vote-webapp.git"
+  },
+  "license": "ISC",
+  "author": "G2P",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
