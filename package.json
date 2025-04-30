@@ -20,6 +20,8 @@
   "type": "commonjs",
   "main": "server.js",
   "scripts": {
+    "setup": "npm install && cd ./service && node server.js",
+    "start": "cd ./service && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
