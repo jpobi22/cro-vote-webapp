@@ -5,11 +5,11 @@
 
 Name and surname | E-mail | JMBAG | Github username
 ------------  | ------------------- | ----- | ---------------------
-Jan Pobi | jpobi22@foi.hr | 0016159939 | jpobi22
-Marin Grabovac | mgrabovac22@foi.hr | 0016160653 | mgrabovac22
-Lucija Polak | lpolak22@foi.hr | 0016158151 | lpolak22
+Jan Pobi | jpobi22@student.foi.hr | 0016159939 | jpobi22
+Marin Grabovac | mgrabovac22@student.foi.hr | 0016160653 | mgrabovac22
+Lucija Polak | lpolak22@student.foi.hr | 0016158151 | lpolak22
 
-## Secure Online Voting System projext specifications
+## Secure Online Voting System project specifications
 
 Develop a secure online voting system that ensures confidentiality, integrity, and availability of votes while protecting against hacking, fraud, and manipulation.
 A practical component for developing a secure online voting system can be achieved by creating a prototype system that implements various security measures to ensure the
@@ -28,3 +28,16 @@ confidentiality, integrity, and availability of votes. Here are the specific det
 By combining these tools and techniques, a practical component for developing a secure online voting system can be achieved. The prototype system can be tested in a virtual environment using tools such as VirtualBox or VMware. The system can also be deployed on a cloud platform such as AWS or Google Cloud Platform to test its scalability and reliability
 
 ## Functional requirements
+
+Label | Name | Short description | Responsible team member
+------ | ----- | ----------- | -------------------
+F01    | Authentication and Authorization| User will be able to register after which he will be able to login using previously decided credentials. This requirement also includes logout. |  | 
+F02    | Encription | System will use algorithms like SHA and AES to encrypt private data like votes  |  |
+F03    |  |  |  | 
+F04    |  |  |  | 
+F05    |  |  |  | 
+F06    |  |  |  | 
+F07    |  |  |  | 
+F08    |  |  |  | 
+F09    |  |  |  | 
+F10    |  |  |  | 
