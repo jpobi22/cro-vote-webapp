@@ -6,7 +6,7 @@ class DB{
             host: 'localhost',
             user: 'root',
             password: "root",
-            database: 'name:TODO, extract to different encripted file'
+            database: 'cro_voting'
             }); 
     }
     openConnection(){
