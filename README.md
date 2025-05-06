@@ -33,9 +33,9 @@ Label | Name | Short description | Responsible team member
 ------ | ----- | ----------- | -------------------
 F01    | Authentication and Authorization| User will be able to register after which he will be able to login using previously decided credentials. This requirement also includes logout. |  | 
 F02    | Encription | System will use algorithms like SHA and AES to encrypt private data like votes  |  |
-F03    |  |  |  | 
-F04    |  |  |  | 
-F05    |  |  |  | 
+F03    | Verfication | System will verify if the votes have been tampered with during transmission or storage. System will use techniques like use of digital signatures and hash function to enable this functional requirement. |  | 
+F04    | Audit trail | System will maintain an audit trail of all voting activity to make it transparent. System will be able to log all voting details and it's activity. |  | 
+F05    | Security Testing | System will be using different security testing techniques like penetration testing, vulnerability scanning and code review to ensure system doesn't kave security vulnerabilities. |  | 
 F06    |  |  |  | 
 F07    |  |  |  | 
 F08    |  |  |  | 
