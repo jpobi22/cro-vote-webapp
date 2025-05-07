@@ -15,6 +15,30 @@ try{
         res.sendFile(path.join(__dirname, "../application/html/index.html"));
     })
 
+    server.get("/login", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/login.html"));
+    })
+
+    server.get("/register", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/register.html"));
+    })
+
+    server.get("/change-password", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/changePassword.html"));
+    })
+
+    server.get("/about-us", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/aboutUs.html"));
+    })
+
+    server.get("/privacy-policy", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/privacyPolicy.html"));
+    })
+
+    server.get("/voting", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/voting.html"));
+    })
+
     server.listen(port, () => {
         console.log("Server pokrenut na: " + startUrl + port);
     })
