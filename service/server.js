@@ -34,18 +34,6 @@ try{
         res.redirect("/");
     });
     
-    server.all(/(.*)/, (req, res, next) => {
-        if (req.session.user == null) {
-            return res.redirect("/login");
-        } else {
-            next();
-        }
-    });    
-
-    server.get("/", (req, res) => {
-        res.sendFile(path.join(__dirname, "../application/html/index.html"));
-    })
-
     server.get("/change-password", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/changePassword.html"));
     })
@@ -56,6 +44,18 @@ try{
 
     server.get("/privacy-policy", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/privacyPolicy.html"));
+    })
+
+    server.all(/(.*)/, (req, res, next) => {
+        if (req.session.user == null) {
+            return res.redirect("/login");
+        } else {
+            next();
+        }
+    });
+
+    server.get("/", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/index.html"));
     })
 
     server.get("/voting", (req, res) => {
