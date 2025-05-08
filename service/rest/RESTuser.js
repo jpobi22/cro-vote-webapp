@@ -53,7 +53,31 @@ class RESTuser {
     } else {
       res.status(400).json({ Error: "Adding cought an error." });
     }
-  }  
+  }
+
+  async oibExists(req, res) {
+    res.type("application/json");
+
+    const { oib } = req.body || {};
+
+    if (!oib) {
+        res.status(400).json({ error: "Required data missing!" });
+        return;
+    }
+
+    try {
+        const result = await this.userDAO.oibExists(oib);        
+
+        if (result && result.length > 0) {
+            res.status(400).json({ error: "Existing oib!" });
+        } else {
+            res.status(200).json({ success: "OIB not found." });
+        }
+    } catch (error) {
+        console.error("Error in oibExists:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }
 
 module.exports = RESTuser;

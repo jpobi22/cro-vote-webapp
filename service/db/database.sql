@@ -30,7 +30,7 @@ CREATE TABLE `cro_voting`.`user`(
   `surname` VARCHAR(45) NOT NULL,
   `address` VARCHAR(100) NOT NULL,
   `phone` VARCHAR(13) NOT NULL,
-  `email` VARCHAR(20) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
   `TOTP_enabled` INTEGER NOT NULL,
   `TOTP_secret_key` VARCHAR(256) NOT NULL,
   `password` VARCHAR(256) NOT NULL,
