@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const address = form.querySelector("input[name='address']").value.trim();
         const phone = form.querySelector("input[name='phone']").value.trim();
         const email = form.querySelector("input[name='email']").value.trim();
-        const password = form.querySelector("input[name='password']").value;
+        const password = form.querySelector("input[name='password']").value.trim();
+        const confirm = form.querySelector("input[name='confirm-password']").value.trim();
 
         function validateOIB(oib) {
             if (!/^\d{11}$/.test(oib)) return false;
@@ -54,6 +55,11 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         if (password.length < 6) {
             lblError.innerHTML = "Lozinka mora imati najmanje 6 znakova.";
+            return;
+        }
+        if (password !== confirm) {
+            event.preventDefault();
+            lblError.innerHTML = 'Lozinke se ne podudaraju.';
             return;
         }
 
