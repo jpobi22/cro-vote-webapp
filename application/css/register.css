@@ -14,12 +14,24 @@ main {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    max-width: 700px;
     width: 100%;
     border: 1px solid #007acc;
 }
 
 form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
     display: flex;
     flex-direction: column;
 }
@@ -31,9 +43,10 @@ form label {
 }
 
 form input[type="text"],
+form input[type="email"],
 form input[type="password"] {
     padding: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     border: 1px solid #007acc;
     border-radius: 4px;
     font-size: 16px;
@@ -41,9 +54,17 @@ form input[type="password"] {
 }
 
 form input[type="text"]:focus,
+form input[type="email"]:focus,
 form input[type="password"]:focus {
     border-color: #dc143c;
     outline: none;
+}
+
+.full-width {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
 }
 
 form input[type="submit"] {
@@ -55,26 +76,20 @@ form input[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 form input[type="submit"]:hover {
     background-color: #b92d44;
 }
 
-form a {
-    margin-top: 12px;
-    font-size: 14px;
-    color: #007acc;
-    text-decoration: none;
-}
-
-form a:hover {
-    text-decoration: underline;
+#lblError {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
 }
 
 #login-help {
-    display: flex;
-    flex-direction: column;
     text-align: center;
     margin-top: 20px;
 }
@@ -82,8 +97,15 @@ form a:hover {
 #login-help a {
     color: #dc143c;
     font-size: 14px;
+    text-decoration: none;
 }
 
 #login-help a:hover {
     text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .form-row {
+        flex-direction: column;
+    }
 }
