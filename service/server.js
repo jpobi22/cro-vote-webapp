@@ -40,6 +40,7 @@ try{
 
     server.post("/api/register", restUser.postUser.bind(restUser));
     server.post("/api/check-existing-oib", restUser.oibExists.bind(restUser));
+    server.post("/api/login", restUser.login.bind(restUser));
     
     server.get("/change-password", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/changePassword.html"));

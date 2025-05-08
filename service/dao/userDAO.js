@@ -1,4 +1,5 @@
 let DB = require("../db/database.js");
+const bcrypt = require("bcrypt");
 
 class UserDAO {
     constructor() {
@@ -56,7 +57,15 @@ class UserDAO {
 
     async login(oib, password) {
         const result = await this.db.executeQuery("SELECT * FROM user WHERE oib = ?", [oib]);
-        return result[0]?.password === password ? result[0] : null;
+        
+        if (result.length === 0) {
+            return null;
+        }
+    
+        const user = result[0];
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        
+        return passwordMatch ? user : null;
     }
 }
 

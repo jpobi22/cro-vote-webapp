@@ -26,12 +26,13 @@
     </header>
     <main>
         <div id="forma">
-            <form action="/api/login">
+            <form action="/api/login" method="post">
                 <label for="oib">Unesite oib:</label>
                 <input name="oib" type="text">
                 <label for="password">Unesite lozinku:</label>
                 <input name="password" type="password">
-                <input type="submit" placeholder="Prijavi se" name="Prijavi se" title="Prijavi se" value="Prijavi se">
+                <input type="submit" value="Prijavi se">
+                <p id="lblError" style="color: red;"></p>
                 <div id="login-help">
                     <a href="/change-password">Ne znaš lozinku? Promijeni je.</a>
                     <a href="/register">Nemaš račun? Registriraj se.</a>
@@ -49,6 +50,6 @@
             </div>
         </div>
     </footer>
-    
 </body>
+<script src="/js/login.js"></script>
 </html>

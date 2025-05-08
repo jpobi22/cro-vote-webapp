@@ -41,14 +41,6 @@ class RESTuser {
     const type = await this.userDAO.getNameUserType(oib);
     
     if (response) {
-      let user = {
-        oib,
-        type,
-        email
-      };
-
-      req.session.user = user;
-
       res.status(201).json({ Success: "User added" });
     } else {
       res.status(400).json({ Error: "Adding cought an error." });
@@ -78,6 +70,39 @@ class RESTuser {
         res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async login(req, res) {
+    res.type("application/json");
+  
+    const { oib, password } = req.body;
+  
+    if (!oib || !password) {
+      res.status(400).json({ error: "Required data missing!" });
+      return;
+    }
+  
+    try {
+      const user = await this.userDAO.login(oib, password);
+  
+      if (!user) {
+        res.status(401).json({ error: "Invalid OIB or password!" });
+        return;
+      }
+  
+      const type = await this.userDAO.getNameUserType(oib);
+  
+      req.session.user = {
+        oib: user.oib,
+        type: type[0]?.name || "Unknown",
+        email: user.email
+      };
+  
+      res.status(200).json({ success: "Login successful!" });
+    } catch (err) {
+      console.error("Login error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }  
 }
 
 module.exports = RESTuser;
