@@ -6,6 +6,7 @@
     <title>Cro vote</title>
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/all-files.css">
+    <link rel="stylesheet" href="/css/register.css">
 </head>
 <body>
     <header>
@@ -24,7 +25,37 @@
         </div>
     </header>
     <main>
+        <div id="forma">
+            <form action="/api/register" method="post">
+                <label for="oib">OIB:</label>
+                <input name="oib" type="text" required>
 
+                <label for="name">Ime:</label>
+                <input name="name" type="text" required>
+
+                <label for="surname">Prezime:</label>
+                <input name="surname" type="text" required>
+
+                <label for="address">Adresa:</label>
+                <input name="address" type="text" required>
+
+                <label for="phone">Telefon:</label>
+                <input name="phone" type="text" required>
+
+                <label for="email">Email:</label>
+                <input name="email" type="email" required>
+
+                <label for="password">Lozinka:</label>
+                <input name="password" type="password" required>
+
+                <input type="submit" value="Registriraj se">
+                <p id="lblError" style="color: red;"></p>
+
+                <div id="login-help">
+                    <a href="/login">Već imaš račun? Prijavi se.</a>
+                </div>
+            </form>
+        </div>
     </main>
     <footer>
         <div class="footer-content">
@@ -36,6 +67,6 @@
             </div>
         </div>
     </footer>
-    
 </body>
+<script src="/js/register.js"></script>
 </html>

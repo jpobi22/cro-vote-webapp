@@ -1,12 +1,19 @@
 const express = require("express");
 const session=require('express-session');
 const path = require("path");
+const cors = require("cors");
+const RESTuser = require("./rest/RESTuser.js");
+
 
 const server = express();
 const port = 8000;
 const startUrl = "http://localhost:";
 
 try{
+    server.use(cors());
+    server.use(express.json());
+    server.use(express.urlencoded({ extended: true }));
+    
     server.use(session(
     { 
         name:'SessionCookie',
@@ -15,6 +22,8 @@ try{
         saveUninitialized: false,
         cookie: { secure: false, expires: new Date(Date.now() + 3600000) }
     }));
+
+    const restUser = new RESTuser();
         
     server.use("/css", express.static(path.join(__dirname, "../application/css")));
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
@@ -28,11 +37,8 @@ try{
     server.get("/register", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/register.html"));
     });
-    
-    server.post("/login", (req, res) => {
-        req.session.user = { username: "nekiKorisnik" };
-        res.redirect("/");
-    });
+
+    server.post("/api/register", restUser.postUser.bind(restUser));
     
     server.get("/change-password", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/changePassword.html"));
