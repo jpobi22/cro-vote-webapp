@@ -1,35 +1,26 @@
 const mysql2 = require('mysql2');
-    
-class DB{
-    constructor(){
-        this.connection = mysql2.createConnection({
+
+class DB {
+    constructor() {
+        this.pool = mysql2.createPool({
             host: 'localhost',
             user: 'root',
-            password: "root",
-            database: 'cro_voting'
-            }); 
+            password: 'root',
+            database: 'cro_voting',
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0
+        }).promise();
     }
-    openConnection(){
-        this.connection.connect();
+
+    async executeQuery(sql, data) {
+        try {
+            const [rows] = await this.pool.query(sql, data);
+            return rows;
+        } catch (err) {
+            throw err;
+        }
     }
-    executeQuery(sql, data){
-        return new Promise((resolve, reject) => {
-            this.connection.query(sql, data, (err, result) =>{
-                    if(err){
-                        reject(err);
-                    }
-                    else{
-                        resolve(result);
-                    }
-            })
-        })
-    }
-    closeConnection(){
-        this.connection.end();
-    }
-    
-};
+}
 
 module.exports = DB;
-
-    
