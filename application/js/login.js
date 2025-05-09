@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    getNavigation();
+    
     const form = document.querySelector("form");
 
     form.addEventListener("submit", async function(event) {
@@ -73,4 +75,27 @@ document.addEventListener("DOMContentLoaded", function() {
             lblError.innerHTML = "Greška u komunikaciji sa serverom.";
         }
     });
+
+    async function getNavigation() {
+        try {
+            const response = await fetch('/api/navigation');
+            const result = await response.json();
+    
+            if (response.ok && result.navigation) {
+                const navElement = document.getElementById("nav");
+                navElement.innerHTML = "";
+    
+                result.navigation.forEach(item => {
+                    const link = document.createElement("a");
+                    link.href = item.link;
+                    link.textContent = item.LinkName;
+                    navElement.appendChild(link);
+                });
+            }
+        } catch (error) {
+            console.error("Error getting navigation:", error);
+        }
+    }
+    
 });
+

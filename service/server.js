@@ -3,6 +3,7 @@ const session=require('express-session');
 const path = require("path");
 const cors = require("cors");
 const RESTuser = require("./rest/RESTuser.js");
+const RESTnavigation = require("./rest/RESTnavigation.js");
 
 
 const server = express();
@@ -24,6 +25,7 @@ try{
     }));
 
     const restUser = new RESTuser();
+    const restNavigation = new RESTnavigation();
         
     server.use("/css", express.static(path.join(__dirname, "../application/css")));
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
@@ -41,6 +43,7 @@ try{
     server.post("/api/register", restUser.postUser.bind(restUser));
     server.post("/api/check-existing-oib", restUser.oibExists.bind(restUser));
     server.post("/api/login", restUser.login.bind(restUser));
+    server.get("/api/navigation", restNavigation.getNavigaciju.bind(restNavigation));
     
     server.get("/change-password", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/changePassword.html"));
@@ -70,11 +73,28 @@ try{
         res.sendFile(path.join(__dirname, "../application/html/voting.html"));
     })
 
+    server.get("/logout", (req, res) => {
+        if (req.session) {
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error("Error deleting session:", err);
+                    res.status(500).json({ Error: "Invalid logout." });
+                } else {
+                    res.clearCookie("connect.sid"); 
+                    res.redirect("/login"); 
+                }
+            });
+        } else {
+            res.redirect("/login"); 
+        }
+    });
+    
+    server.get("/api/current-user", restUser.getCurrentUser.bind(restUser));
+
     server.listen(port, () => {
         console.log("Server pokrenut na: " + startUrl + port);
     })
 
-    server.get("/api/current-user", restUser.getCurrentUser.bind(restUser))
 }
 catch(err){
     console.log(err);
