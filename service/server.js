@@ -73,6 +73,8 @@ try{
     server.listen(port, () => {
         console.log("Server pokrenut na: " + startUrl + port);
     })
+
+    server.get("/api/current-user", restUser.getCurrentUser.bind(restUser))
 }
 catch(err){
     console.log(err);

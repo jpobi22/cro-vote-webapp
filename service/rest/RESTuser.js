@@ -71,6 +71,33 @@ class RESTuser {
     }
   }
 
+  async getCurrentUser(req, res) {
+    res.type("application/json");
+
+    try {
+      
+        const result = await this.userDAO.getUser(req.session.user.oib);     
+        const resultType = await this.userDAO.getNameUserType(req.session.user.oib);
+
+        if (result && resultType) {
+          const response = {
+            oib: result[0].oib,
+            email: result[0].email,
+            name: result[0].name,
+            surname: result[0].surname,
+            type: resultType[0].name
+          }
+
+          res.status(201).json(response);
+        } else {
+          res.status(400).json({ Error: "Error getting current user!" });
+        }
+    } catch (error) {
+        console.error("Error in oibExists:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
   async login(req, res) {
     res.type("application/json");
   
