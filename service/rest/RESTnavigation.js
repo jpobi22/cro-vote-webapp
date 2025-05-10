@@ -6,14 +6,14 @@ class RESTnavigation {
             { LinkName: "Admino", link: "/admin" },
             { LinkName: "About us", link: "/about-us" },
             { LinkName: "Privacy policy", link: "/privacy-policy" },
-            { LinkName: "Logout", link: "/logout" }
+            { LinkName: "Logout", link: "/api/logout" }
         ],
         voter: [
             { LinkName: "Home", link: "/" },
             { LinkName: "Voting", link: "/voting" },
             { LinkName: "About us", link: "/about-us" },
             { LinkName: "Privacy policy", link: "/privacy-policy" },
-            { LinkName: "Logout", link: "/logout" }
+            { LinkName: "Logout", link: "/api/logout" }
         ],
         guest: [
             { LinkName: "Login", link: "/login" },
