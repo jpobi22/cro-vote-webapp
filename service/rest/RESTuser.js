@@ -12,10 +12,15 @@ class RESTuser {
   async postUser(req, res) {
     res.type("application/json");
     
-    const { oib, name, surname, address, phone, email, password} = req.body;
+    const { oib, name, surname, address, phone, email, password, recaptchaToken} = req.body;
     const id_user_type = 2;
     const TOTP_enabled = 0;
-    const TOTP_secret_key = "Not generated!"
+    const TOTP_secret_key = "Not generated!";
+
+    const isCaptchaValid = await this.verifyRecaptcha(recaptchaToken);
+    if (!isCaptchaValid) {
+      return res.status(400).json({ error: 'Bad recaptcha response!' });
+    }
 
     if (!oib || !name || !surname || !address || !phone || !email || !password) {
         res.status(400).json({ error: "Required data missing!" });
@@ -40,7 +45,6 @@ class RESTuser {
     }
 
     const response = await this.userDAO.add(user);
-    const type = await this.userDAO.getNameUserType(oib);
     
     if (response) {
       res.status(201).json({ Success: "User added" });

@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const email = form.querySelector("input[name='email']").value.trim();
         const password = form.querySelector("input[name='password']").value.trim();
         const confirm = form.querySelector("input[name='confirm-password']").value.trim();
+        const recaptchaToken = document.getElementById("recaptcha-token").value;
 
         function validateOIB(oib) {
             if (!/^\d{11}$/.test(oib)) return false;
@@ -71,7 +72,8 @@ document.addEventListener("DOMContentLoaded", function() {
             address,
             phone,
             email,
-            password
+            password,
+            recaptchaToken
         };
 
         try {
@@ -111,6 +113,12 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('Error:', error);
             lblError.innerHTML = "Greška u komunikaciji sa serverom.";
         }
+    });
+
+    grecaptcha.ready(function() {
+        grecaptcha.execute('6LfW5DUrAAAAAAcgKVIkI2DCgzeHVZwlPoe9Eu0e', {action: 'registration'}).then(function(token) {
+            document.getElementById('recaptcha-token').value = token;
+        });
     });
 
     async function getNavigation() {
