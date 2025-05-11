@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function showTotpModal() {
         const modal = document.getElementById("totpModal");
         modal.classList.add("show");
+        totpInputs[0].focus();
     }    
 
     function hideTotpModal() {
@@ -97,12 +98,38 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    document.getElementById("submitTotp").addEventListener("click", async function () {
-        const totpCode = Array.from(document.querySelectorAll('.otp-input')).map(input => input.value.trim()).join('');
+    const totpInputs = document.querySelectorAll('.totp-input');
+
+    totpInputs.forEach((input, index) => {
+        input.addEventListener('input', function () {
+            if (this.value.length === 1 && index < totpInputs.length - 1) {
+                totpInputs[index + 1].focus();
+            }
+
+            const totpCode = Array.from(totpInputs).map(input => input.value.trim()).join('');
+            if (totpCode.length === 6) {
+                handleTotpSubmit(totpCode);
+            }
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                totpInputs[index - 1].focus();
+            }
+        });
+    });
+
+    function resetOtpFields() {
+        totpInputs.forEach(input => input.value = '');
+        totpInputs[0].focus();
+    }    
+
+    async function handleTotpSubmit(totpCode) {
         const oib = document.querySelector("input[name='oib']").value.trim();
+        const totpError = document.getElementById('totpError');
 
         if (!/^\d{6}$/.test(totpCode)) {
-            document.getElementById("totpError").innerText = "Unesite ispravan 6-znamenkasti kod.";
+            totpError.innerText = "Unesite ispravan 6-znamenkasti kod.";
             return;
         }
 
@@ -116,45 +143,34 @@ document.addEventListener("DOMContentLoaded", function () {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                hideTotpModal();
-                localStorage.removeItem("loginLock");
                 window.location.href = "/";
             } else {
-                document.getElementById("totpError").innerText = result.error || "Neispravan TOTP kod.";
+                totpError.innerText = result.error || "Neispravan TOTP kod.";
+                animateOtpFields();
+                resetOtpFields();
             }
         } catch (error) {
             console.error("Greška prilikom provjere TOTP-a:", error);
-            document.getElementById("totpError").innerText = "Greška u komunikaciji sa serverom.";
+            totpError.innerText = "Greška u komunikaciji sa serverom.";
+            resetOtpFields();
         }
-    });
+    }
 
-    const otpInputs = document.querySelectorAll('.otp-input');
-    const submitButton = document.getElementById('submitTotp');
-    const totpError = document.getElementById('totpError');
-
-    otpInputs.forEach((input, index) => {
-        input.addEventListener('input', function () {
-            if (this.value.length === 1 && index < otpInputs.length - 1) {
-                otpInputs[index + 1].focus();
-            }
+    function animateOtpFields() {
+        const totpInputs = document.querySelectorAll('.totp-input');
+        totpInputs.forEach((input, index) => {
+            input.animate([
+                { transform: 'translateY(0)' },
+                { transform: 'translateY(-10px)' },
+                { transform: 'translateY(0)' }
+            ], {
+                duration: 500,
+                delay: index * 100,
+                iterations: 1
+            });
         });
+    }
 
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Backspace' && this.value === '' && index > 0) {
-                otpInputs[index - 1].focus();
-            }
-        });
-    });
-
-    submitButton.addEventListener('click', function () {
-        const otpCode = Array.from(otpInputs).map(input => input.value).join('');
-        if (otpCode.length === 6) {
-            console.log('Uneseni TOTP kod:', otpCode);
-            totpError.textContent = '';
-        } else {
-            totpError.textContent = 'Molimo unesite svih 6 znamenki.';
-        }
-    });
 
     async function getNavigation() {
         try {
