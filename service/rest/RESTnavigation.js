@@ -3,9 +3,10 @@ class RESTnavigation {
         admin: [
             { LinkName: "Home", link: "/" },
             { LinkName: "Voting", link: "/voting" },
-            { LinkName: "Admino", link: "/admin" },
+            { LinkName: "Manage votings", link: "/manage-voting" },
             { LinkName: "About us", link: "/about-us" },
             { LinkName: "Privacy policy", link: "/privacy-policy" },
+            { LinkName: "Profile", link: "/profile" },
             { LinkName: "Logout", link: "/api/logout" }
         ],
         voter: [
@@ -13,6 +14,7 @@ class RESTnavigation {
             { LinkName: "Voting", link: "/voting" },
             { LinkName: "About us", link: "/about-us" },
             { LinkName: "Privacy policy", link: "/privacy-policy" },
+            { LinkName: "Profile", link: "/profile" },
             { LinkName: "Logout", link: "/api/logout" }
         ],
         guest: [

@@ -86,6 +86,14 @@ try{
         res.sendFile(path.join(__dirname, "../application/html/voting.html"));
     })
 
+    server.get("/profile", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/profile.html"));
+    })
+
+    server.get("/manage-voting", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/manageVotings.html"));
+    })
+
     server.get("/api/logout", (req, res) => {
         if (req.session) {
             req.session.destroy((err) => {
