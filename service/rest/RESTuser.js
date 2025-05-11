@@ -1,4 +1,5 @@
 const UserDAO = require("../dao/userDAO.js");
+const { transporter } = require("../modules/nodemailer.js");
 const bcrypt = require("bcrypt");
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
@@ -7,6 +8,7 @@ class RESTuser {
 
   constructor() {
     this.userDAO = new UserDAO();
+    this.transporter = transporter;
   }
 
   async postUser(req, res) {
@@ -196,6 +198,19 @@ class RESTuser {
       const hashedPassword = await bcrypt.hash(password, saltRounds);      
   
       await this.userDAO.changePassword(oib, hashedPassword, email);
+
+      const mailOptions = {
+        from: 'crovote@gmail.com',
+        to: user[0]?.email,
+        subject: 'Promjena lozinke',
+        text: `Poštovani ${user[0]?.name} ${user[0]?.surname},\n\nVaša lozinka je uspješno promijenjena.\n\nAko niste vi inicirali ovu promjenu, molimo vas da nas odmah kontaktirate na mail: info@crovote.hr.\nLijep pozdrav\nCro vote tim`
+      };
+      
+      this.transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.error('Greška pri slanju e-maila:', error);
+        }
+      });      
   
       res.status(200).json({ success: "Password changed." });
     } catch (err) {
