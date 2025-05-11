@@ -33,6 +33,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.1",
     "qrcode": "^1.5.4",
+    "recaptcha-v3": "^1.11.3",
     "speakeasy": "^2.0.0"
   }
 }

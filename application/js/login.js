@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const oib = form.querySelector("input[name='oib']").value.trim();
         const password = form.querySelector("input[name='password']").value.trim();
+        const recaptchaToken = document.getElementById("recaptcha-token").value;
 
         const lockInfo = JSON.parse(localStorage.getItem("loginLock"));
         const now = Date.now();
@@ -44,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const data = { oib, password };
+        const data = { oib, password, recaptchaToken };
 
         try {
             const response = await fetch('/api/login', {
@@ -145,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.ok && result.success) {
                 window.location.href = "/";
             } else {
-                totpError.innerText = result.error || "Neispravan TOTP kod.";
+                totpError.innerText = "Neispravan TOTP kod.";
                 animateOtpFields();
                 resetOtpFields();
             }
@@ -171,6 +172,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    grecaptcha.ready(function() {
+        grecaptcha.execute('6LfW5DUrAAAAAAcgKVIkI2DCgzeHVZwlPoe9Eu0e', {action: 'login'}).then(function(token) {
+            document.getElementById('recaptcha-token').value = token;
+        });
+    });
 
     async function getNavigation() {
         try {

@@ -168,11 +168,16 @@ class RESTuser {
   async login(req, res) {
     res.type("application/json");
   
-    const { oib, password } = req.body;
+    const { oib, password, recaptchaToken } = req.body;    
   
     if (!oib || !password) {
       res.status(400).json({ error: "Required data missing!" });
       return;
+    }
+
+    const isCaptchaValid = await this.verifyRecaptcha(recaptchaToken);
+    if (!isCaptchaValid) {
+      return res.status(400).json({ error: 'Bad recaptcha response!' });
     }
   
     try {
@@ -207,7 +212,7 @@ class RESTuser {
     const { oib, token } = req.body;
   
     if (!oib || !token) {
-      res.status(400).json({ error: "Nedostaju podaci!" });
+      res.status(400).json({ error: "Require data is missing!" });
       return;
     }
   
@@ -230,15 +235,30 @@ class RESTuser {
           type: type[0]?.name || "Unknown",
           email: user[0]?.email
         };
-        res.status(200).json({ success: "TOTP kod je ispravan." });
+        res.status(200).json({ success: "TOTP code is valid." });
       } else {
-        res.status(400).json({ error: "Neispravan TOTP kod." });
+        res.status(400).json({ error: "TOTP code is invalid." });
       }
     } catch (err) {
-      console.error("Greška prilikom provjere TOTP-a:", err);
-      res.status(500).json({ error: "Interna greška servera." });
+      console.error("Error checking TOTP:", err);
+      res.status(500).json({ error: "Internal server error." });
     }
-  }  
+  }
+  
+  async verifyRecaptcha(token) {
+    const secretKey = '6LfW5DUrAAAAAMxNL8u5UVaZ5jNlArl0RKUAuiE0';
+
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        body: new URLSearchParams({
+            secret: secretKey,
+            response: token
+        })
+    });
+    const data = await response.json();    
+    
+    return data.success && data.score > 0.5;
+  }
     
 }
 
