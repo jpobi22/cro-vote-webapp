@@ -69,17 +69,39 @@ document.addEventListener("DOMContentLoaded", function() {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                alert("Lozinka je uspješno promijenjena.");
+                showModal("Lozinka je uspješno promijenjena.");
                 form.reset();
             } else {
                 lblError.textContent = result.error || "Došlo je do greške.";
-            }
+            }              
         } catch (error) {
             console.error("Greška:", error);
             lblError.textContent = "Greška u komunikaciji sa serverom.";
         }
     });
 
+    function showModal(message) {
+        const modal = document.getElementById("feedbackModal");
+        const modalMessage = document.getElementById("modalMessage");
+        modalMessage.textContent = message;
+        modal.style.display = "block";
+    }
+    
+    function closeModal() {
+        const modal = document.getElementById("feedbackModal");
+        modal.style.display = "none";
+    }
+    
+    const closeBtn = document.getElementById("closeModal");
+    closeBtn.addEventListener("click", closeModal);
+
+    window.addEventListener("click", function(event) {
+    const modal = document.getElementById("feedbackModal");
+    if (event.target === modal) {
+        closeModal();
+    }
+    });
+  
     async function getNavigation() {
         try {
             const response = await fetch('/api/navigation');
