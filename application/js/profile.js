@@ -56,6 +56,10 @@ document.addEventListener("DOMContentLoaded", function() {
     
         const enableBtn = document.getElementById('enable-totp-button');
         const disableBtn = document.getElementById('disable-totp-button');
+        const statusEl = document.getElementById("totp-status");
+        
+        statusEl.textContent = data.TOTP_enabled === 1 ? "TOTP je omogućen." : "TOTP nije omogućen.";
+
     
         if (data.TOTP_enabled === 1) {
             disableBtn.style.display = 'block';
@@ -91,6 +95,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
             document.getElementById('enable-totp-button').style.display = 'none';
             document.getElementById('disable-totp-button').style.display = 'block';
+
+            checkTotpStatus(oib);
         }
     }
     
@@ -110,8 +116,10 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('disable-totp-button').style.display = 'none';
             document.getElementById('enable-totp-button').style.display = 'block';
             document.getElementById('totp-info').style.display = 'none';
+
+            checkTotpStatus(oib);
         }
-    }    
+    }   
 
     async function getNavigation() {
         try {
