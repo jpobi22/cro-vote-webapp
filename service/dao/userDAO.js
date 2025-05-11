@@ -10,6 +10,10 @@ class UserDAO {
         return await this.db.executeQuery("SELECT * FROM user WHERE oib = ?", [oib]);
     }
 
+    async getUserByEmail(oib, email) {
+        return await this.db.executeQuery("SELECT * FROM user WHERE oib = ? AND email = ?", [oib, email]);
+    }
+
     async oibExists(oib) {
         return await this.db.executeQuery("SELECT * FROM user WHERE oib = ?", [oib]);
     }
@@ -30,6 +34,11 @@ class UserDAO {
     async setSecretKey(oib, key) {
         const sql = `UPDATE user SET TOTP_secret_key = ? WHERE oib = ?`;
         return await this.db.executeQuery(sql, [key, oib]);
+    }
+
+    async changePassword(oib, password, email) {
+        const sql = `UPDATE user SET password = ? WHERE oib = ? AND email = ?`;
+        return await this.db.executeQuery(sql, [password, oib, email]);
     }
 
     async getNameUserType(oib) {

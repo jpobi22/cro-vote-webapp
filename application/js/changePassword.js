@@ -1,6 +1,85 @@
 document.addEventListener("DOMContentLoaded", function() {
     getNavigation();
 
+    const form = document.getElementById("changePasswordForm");
+    const lblError = document.getElementById("lblError");
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        lblError.textContent = "";
+
+        const oib = form.oib.value.trim();
+        const email = form.email.value.trim();
+        const oldPassword = form.oldPassword.value.trim();
+        const newPassword = form.newPassword.value.trim();
+        const confirmPassword = form.confirmPassword.value.trim();
+
+        function validateOIB(oib) {
+            if (!/^\d{11}$/.test(oib)) return false;
+        
+            let a = 10;
+            for (let i = 0; i < 10; i++) {
+                a = (parseInt(oib[i], 10) + a) % 10;
+                if (a === 0) a = 10;
+                a = (a * 2) % 11;
+            }
+            let controlDigit = (11 - a) % 10;
+            return controlDigit === parseInt(oib[10], 10);
+        }
+        
+        if (!validateOIB(oib)) {
+            lblError.textContent = "OIB nije valjan.";
+            return;
+        }  
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            lblError.textContent = "Unesite ispravan email.";
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            lblError.textContent = "Nova lozinka mora imati najmanje 6 znakova.";
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            lblError.textContent = "Lozinke se ne podudaraju.";
+            return;
+        }
+
+        if (oldPassword === newPassword) {
+            lblError.textContent = "Nova lozinka mora biti različita od stare.";
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/changing-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    oib,
+                    email,
+                    password: newPassword,
+                    oldPassword
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                alert("Lozinka je uspješno promijenjena.");
+                form.reset();
+            } else {
+                lblError.textContent = result.error || "Došlo je do greške.";
+            }
+        } catch (error) {
+            console.error("Greška:", error);
+            lblError.textContent = "Greška u komunikaciji sa serverom.";
+        }
+    });
+
     async function getNavigation() {
         try {
             const response = await fetch('/api/navigation');

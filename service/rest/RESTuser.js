@@ -169,6 +169,41 @@ class RESTuser {
     }
   }
 
+  async changePassword(req, res) {
+    res.type("application/json");
+  
+    const { oib, email, password, oldPassword } = req.body;
+  
+    if (!oib || !email || !password || !oldPassword) {
+      res.status(400).json({ error: "Required data missing!" });
+      return;
+    }
+  
+    try {
+      const user = await this.userDAO.getUserByEmail(oib, email);
+      if (!user || !user[0]?.password) {
+        res.status(404).json({ error: "User not found." });
+        return;
+      }
+  
+      const isMatch = await bcrypt.compare(oldPassword, user[0]?.password);
+      if (!isMatch) {
+        res.status(401).json({ error: "Incorrect old password." });
+        return;
+      }
+  
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);      
+  
+      await this.userDAO.changePassword(oib, hashedPassword, email);
+  
+      res.status(200).json({ success: "Password changed." });
+    } catch (err) {
+      console.error("Error changing password: ", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }  
+
   async login(req, res) {
     res.type("application/json");
   
