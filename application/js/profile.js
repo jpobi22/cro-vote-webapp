@@ -25,6 +25,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     document.getElementById("profile-surname").textContent = data.surname;
                     document.getElementById("profile-email").textContent = data.email;
                     document.getElementById("profile-type").textContent = data.type;
+
+                    checkTotpStatus(data.oib);
+    
+                    document.getElementById('enable-totp-button').addEventListener('click', () => {
+                        enableTotp(data.oib);
+                    });
                 } else {
                     console.error("Failed to load profile.");
                 }
@@ -35,6 +41,77 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error("Error fetching profile:", err);
         }
     }
+
+    async function checkTotpStatus(oib) {
+        const jwtRes = await fetch("/api/getJWT");
+        const jwtData = await jwtRes.json();
+    
+        const headers = new Headers();
+        headers.append("Authorization", jwtData.token);
+    
+        const res = await fetch(`/api/user/totp/enabled/${oib}`, {
+            headers: headers
+        });
+        const data = await res.json();
+    
+        const enableBtn = document.getElementById('enable-totp-button');
+        const disableBtn = document.getElementById('disable-totp-button');
+    
+        if (data.TOTP_enabled === 1) {
+            disableBtn.style.display = 'block';
+            enableBtn.style.display = 'none';
+        } else {
+            enableBtn.style.display = 'block';
+            disableBtn.style.display = 'none';
+        }
+    
+        disableBtn.addEventListener('click', () => {
+            disableTotp(oib);
+        });
+    }
+    
+    async function enableTotp(oib) {
+        const jwtRes = await fetch("/api/getJWT");
+        const jwtData = await jwtRes.json();
+    
+        const headers = new Headers();
+        headers.append("Authorization", jwtData.token);
+    
+        const res = await fetch(`/api/user/totp/enable/${oib}`, {
+            method: 'POST',
+            headers: headers
+        });
+    
+        const data = await res.json();
+    
+        if (res.ok) {
+            document.getElementById('totp-info').style.display = 'block';
+            document.getElementById('totp-secret').textContent = data.secret;
+            document.getElementById('totp-qr').src = data.qrCode;
+    
+            document.getElementById('enable-totp-button').style.display = 'none';
+            document.getElementById('disable-totp-button').style.display = 'block';
+        }
+    }
+    
+    async function disableTotp(oib) {
+        const jwtRes = await fetch("/api/getJWT");
+        const jwtData = await jwtRes.json();
+    
+        const headers = new Headers();
+        headers.append("Authorization", jwtData.token);
+    
+        const res = await fetch(`/api/user/totp/disable/${oib}`, {
+            method: 'POST',
+            headers: headers
+        });
+    
+        if (res.ok) {
+            document.getElementById('disable-totp-button').style.display = 'none';
+            document.getElementById('enable-totp-button').style.display = 'block';
+            document.getElementById('totp-info').style.display = 'none';
+        }
+    }    
 
     async function getNavigation() {
         try {

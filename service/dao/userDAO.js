@@ -14,6 +14,24 @@ class UserDAO {
         return await this.db.executeQuery("SELECT * FROM user WHERE oib = ?", [oib]);
     }
 
+    async totpEnabled(oib) {
+        return await this.db.executeQuery("SELECT TOTP_enabled FROM user WHERE oib = ?", [oib]);
+    }
+
+    async getTotpSecretKey(oib) {
+        return await this.db.executeQuery("SELECT TOTP_secret_key FROM user WHERE oib = ?", [oib]);
+    }
+
+    async setTotp(oib, enabled) {
+        const sql = `UPDATE user SET TOTP_enabled = ? WHERE oib = ?`;
+        return await this.db.executeQuery(sql, [enabled, oib]);
+    }
+
+    async setSecretKey(oib, key) {
+        const sql = `UPDATE user SET TOTP_secret_key = ? WHERE oib = ?`;
+        return await this.db.executeQuery(sql, [key, oib]);
+    }
+
     async getNameUserType(oib) {
         return await this.db.executeQuery(
             "SELECT ut.name FROM user_type ut, user u WHERE u.oib = ? AND u.id_user_type = ut.id",
@@ -32,7 +50,7 @@ class UserDAO {
             user.phone,
             user.email,
             user.TOTP_enabled,
-            user.TOTP_secred_key,
+            user.TOTP_secret_key,
             user.password
         ]);
     }

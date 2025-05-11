@@ -127,6 +127,10 @@ try{
     });
     
     server.get("/api/current-user", restUser.getCurrentUser.bind(restUser));
+
+    server.get("/api/user/totp/enabled/:oib", restUser.getTotpStatus.bind(restUser));
+    server.post("/api/user/totp/enable/:oib", restUser.enableTotp.bind(restUser));
+    server.post("/api/user/totp/disable/:oib", restUser.disableTotp.bind(restUser));
     
     server.listen(port, () => {
         console.log("Server pokrenut na: " + startUrl + port);

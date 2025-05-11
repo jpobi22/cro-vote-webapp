@@ -1,5 +1,7 @@
 const UserDAO = require("../dao/userDAO.js");
 const bcrypt = require("bcrypt");
+const speakeasy = require("speakeasy");
+const qrcode = require("qrcode");
 
 class RESTuser {  
 
@@ -13,7 +15,7 @@ class RESTuser {
     const { oib, name, surname, address, phone, email, password} = req.body;
     const id_user_type = 2;
     const TOTP_enabled = 0;
-    const TOTP_secred_key = "Not generated!"
+    const TOTP_secret_key = "Not generated!"
 
     if (!oib || !name || !surname || !address || !phone || !email || !password) {
         res.status(400).json({ error: "Required data missing!" });
@@ -34,7 +36,7 @@ class RESTuser {
         password: hashedPassword,
         id_user_type,
         TOTP_enabled,
-        TOTP_secred_key
+        TOTP_secret_key
     }
 
     const response = await this.userDAO.add(user);
@@ -95,6 +97,71 @@ class RESTuser {
     } catch (error) {
         console.error("Error in oibExists:", error);
         res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async getTotpStatus(req, res) {
+    res.type("application/json");
+
+    const oib = req.params.oib;
+    try {
+      const result = await this.userDAO.totpEnabled(oib);
+      res.status(200).json({ TOTP_enabled: result[0].TOTP_enabled });
+    } catch (err) {
+      console.error("Error getting TOTP status:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async enableTotp(req, res) {
+    res.type("application/json");
+
+    const oib = req.params.oib;
+    try {
+      const secretResult = await this.userDAO.getTotpSecretKey(oib);
+      let secret = secretResult[0].TOTP_secret_key;
+
+      if (secret === "Not generated!") {
+        const newSecret = speakeasy.generateSecret({ length: 20 });
+        secret = newSecret.base32;
+        await this.userDAO.setSecretKey(oib, secret);
+      }
+
+      await this.userDAO.setTotp(oib, 1);
+
+      const otpauth_url = speakeasy.otpauthURL({
+        secret: secret,
+        label: `CroVote:${oib}`,
+        issuer: "CroVote",
+        encoding: "base32"
+      });
+
+      qrcode.toDataURL(otpauth_url, (err, data_url) => {
+        if (err) {
+          console.error("QR code generation error:", err);
+          res.status(500).json({ error: "QR code generation failed" });
+        } else {
+          res.status(200).json({ secret, qrCode: data_url });
+        }
+      });
+
+    } catch (err) {
+      console.error("Error enabling TOTP:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async disableTotp(req, res) {
+    res.type("application/json");
+
+    const oib = req.params.oib;
+
+    try {
+      await this.userDAO.setTotp(oib, 0);
+      res.status(200).json({ success: "TOTP disabled." });
+    } catch (err) {
+      console.error("Error disabling TOTP:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   }
 
