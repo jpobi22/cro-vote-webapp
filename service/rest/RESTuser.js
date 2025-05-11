@@ -185,18 +185,61 @@ class RESTuser {
   
       const type = await this.userDAO.getNameUserType(oib);
   
-      req.session.user = {
-        oib: user.oib,
-        type: type[0]?.name || "Unknown",
-        email: user.email
-      };
-  
-      res.status(200).json({ success: "Login successful!" });
+      if (user.TOTP_enabled) {
+        res.status(200).json({ requiresTOTP: true });
+      } else {
+        req.session.user = {
+          oib: user.oib,
+          type: type[0]?.name || "Unknown",
+          email: user.email
+        };
+        res.status(200).json({ success: "Login successful!" });
+      }
     } catch (err) {
       console.error("Login error:", err);
       res.status(500).json({ error: "Internal server error" });
     }
+  }
+
+  async verifyTotp(req, res) {
+    res.type("application/json");
+  
+    const { oib, token } = req.body;
+  
+    if (!oib || !token) {
+      res.status(400).json({ error: "Nedostaju podaci!" });
+      return;
+    }
+  
+    try {
+      const user = await this.userDAO.getUser(oib);
+      const type = await this.userDAO.getNameUserType(oib);
+      const secretResult = await this.userDAO.getTotpSecretKey(oib);
+      const secret = secretResult[0].TOTP_secret_key;
+  
+      const verified = speakeasy.totp.verify({
+        secret: secret,
+        encoding: "base32",
+        token: token,
+        window: 1
+      });
+  
+      if (verified) {
+        req.session.user = {
+          oib: user[0]?.oib,
+          type: type[0]?.name || "Unknown",
+          email: user[0]?.email
+        };
+        res.status(200).json({ success: "TOTP kod je ispravan." });
+      } else {
+        res.status(400).json({ error: "Neispravan TOTP kod." });
+      }
+    } catch (err) {
+      console.error("Greška prilikom provjere TOTP-a:", err);
+      res.status(500).json({ error: "Interna greška servera." });
+    }
   }  
+    
 }
 
 module.exports = RESTuser;

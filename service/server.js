@@ -44,6 +44,7 @@ try{
     server.post("/api/register", restUser.postUser.bind(restUser));
     server.post("/api/check-existing-oib", restUser.oibExists.bind(restUser));
     server.post("/api/login", restUser.login.bind(restUser));
+    server.post("/api/verify-totp", restUser.verifyTotp.bind(restUser));
     server.get("/api/navigation", restNavigation.getNavigaciju.bind(restNavigation));
     
     server.get("/change-password", (req, res) => {

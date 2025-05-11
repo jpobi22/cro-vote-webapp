@@ -58,23 +58,75 @@ document.addEventListener("DOMContentLoaded", function() {
             if (response.ok && result.success === "Login successful!") {
                 localStorage.removeItem("loginLock");
                 window.location.href = "/";
-            } else {
+              } else if (response.ok && result.requiresTOTP) {
+                showTotpModal();
+              } else {
                 lblError.innerHTML = "Neispravan OIB ili lozinka.";
-
+              
                 let attempts = lockInfo || { count: 0, unlockTime: 0 };
                 attempts.count += 1;
-
+              
                 if (attempts.count >= 3) {
-                    attempts.unlockTime = now + 30 * 60 * 1000;
+                  attempts.unlockTime = now + 30 * 60 * 1000;
                 }
-
+              
                 localStorage.setItem("loginLock", JSON.stringify(attempts));
-            }
+              }              
         } catch (error) {
             console.error('Error:', error);
             lblError.innerHTML = "Greška u komunikaciji sa serverom.";
         }
     });
+
+    function showTotpModal() {
+        document.getElementById("totpModal").style.display = "block";
+    }
+    
+    function hideTotpModal() {
+        document.getElementById("totpModal").style.display = "none";
+        document.getElementById("totpError").innerText = "";
+        document.getElementById("totpInput").value = "";
+    }
+    
+    document.getElementById("closeTotp").addEventListener("click", hideTotpModal);
+    
+    window.addEventListener("click", function(event) {
+        const modal = document.getElementById("totpModal");
+        if (event.target === modal) {
+        hideTotpModal();
+        }
+    });
+    
+    document.getElementById("submitTotp").addEventListener("click", async function() {
+        const totpCode = document.getElementById("totpInput").value.trim();
+        const oib = document.querySelector("input[name='oib']").value.trim();
+    
+        if (!/^\d{6}$/.test(totpCode)) {
+        document.getElementById("totpError").innerText = "Unesite ispravan 6-znamenkasti kod.";
+        return;
+        }
+    
+        try {
+        const response = await fetch("/api/verify-totp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ oib, token: totpCode })
+        });
+    
+        const result = await response.json();
+    
+        if (response.ok && result.success) {
+            hideTotpModal();
+            localStorage.removeItem("loginLock");
+            window.location.href = "/";
+        } else {
+            document.getElementById("totpError").innerText = result.error || "Neispravan TOTP kod.";
+        }
+        } catch (error) {
+        console.error("Greška prilikom provjere TOTP-a:", error);
+        document.getElementById("totpError").innerText = "Greška u komunikaciji sa serverom.";
+        }
+    });  
 
     async function getNavigation() {
         try {

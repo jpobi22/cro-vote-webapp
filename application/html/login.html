@@ -35,6 +35,15 @@
                     <a href="/register">Nemaš račun? Registriraj se.</a>
                 </div>
             </form>
+            <div id="totpModal" class="modal">
+                <div class="modal-content">
+                <span class="close" id="closeTotp">&times;</span>
+                <h2>Unesite TOTP kod</h2>
+                <input type="text" id="totpInput" placeholder="6-znamenkasti kod">
+                <button id="submitTotp">Potvrdi</button>
+                <p id="totpError" style="color: red;"></p>
+                </div>
+            </div>
         </div>
     </main>
     <footer>
