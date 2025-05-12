@@ -2,6 +2,7 @@ const express = require("express");
 const session=require('express-session');
 const morgan = require('morgan');
 const https = require('https');
+const http = require('http');
 const logger = require('../log/logger.js');
 const { createToken, checkToken } = require("./modules/jwtModul.js");
 const fs = require('fs');
@@ -171,6 +172,14 @@ try{
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);
         console.log("Server started at: " + startUrl + port);
+    });
+
+    http.createServer((req, res) => {
+        const host = req.headers.host.replace(/:\d+$/, `:${port}`);
+        res.writeHead(301, { "Location": `https://${host}${req.url}` });        
+        res.end();
+    }).listen(8080, () => {
+        logger.info('HTTP preusmjerivač pokrenut na portu 8080');
     });
     
 }
