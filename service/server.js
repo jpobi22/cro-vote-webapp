@@ -18,9 +18,12 @@ try{
     server.use(cors());
     server.use(express.json());
     server.use(express.urlencoded({ extended: true }));
-    const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', '../../log/logs/all-logging.log'), { flags: 'a' });
 
+    const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', '../../log/logs/all-logging.log'), { flags: 'a' });
     server.use(morgan('combined', { stream: accessLogStream }));
+
+    server.set('trust proxy', true);
+
     
     server.use(session(
     { 
@@ -128,12 +131,12 @@ try{
                 return;
             }
 
-            const { method, originalUrl } = req;
+            const { method, originalUrl, ip } = req;
             const timestamp = new Date().toISOString();
             const user = req.session.user || {};
             const { oib = 'N/A', email = 'N/A', type = 'N/A' } = user;
 
-            logger.info(`JWT valid | Time: ${timestamp} | Method: ${method} | Path: ${originalUrl} | OIB: ${oib} | Email: ${email} | Role: ${type}`);
+            logger.info(`JWT valid | Time: ${timestamp} | Method: ${method} | Path: ${originalUrl} | OIB: ${oib} | Email: ${email} | Role: ${type} | IP: ${ip}`);
             
             next(); 
         } catch (err) {
