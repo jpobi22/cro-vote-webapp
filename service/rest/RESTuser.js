@@ -9,6 +9,8 @@ class RESTuser {
   constructor() {
     this.userDAO = new UserDAO();
     this.transporter = transporter;
+    this.MAX_ATTEMPTS = 3;
+    this.LOCK_TIME_MS = 30 * 60 * 1000;
   }
 
   async postUser(req, res) {
@@ -217,46 +219,70 @@ class RESTuser {
       console.error("Error changing password: ", err);
       res.status(500).json({ error: "Internal server error" });
     }
-  }  
+  }
 
   async login(req, res) {
     res.type("application/json");
-  
-    const { oib, password, recaptchaToken } = req.body;    
-  
+    const { oib, password, recaptchaToken } = req.body;
+    const now = Date.now();
+    const la = req.session.loginAttempts || { count: 0, lastAttempt: null };
+
+    if (la.count >= this.MAX_ATTEMPTS) {
+      const unlockAt = new Date(la.lastAttempt).getTime() + this.LOCK_TIME_MS;
+      if (now < unlockAt) {
+        const retryAfter = Math.ceil((unlockAt - now) / 1000);
+        return res.status(429).json({
+          error: "Too many attempts, try again later",
+          attemptsLeft: 0,
+          retryAfter
+        });
+      } else {
+        la.count = 0;
+        la.lastAttempt = null;
+      }
+    }
+
     if (!oib || !password) {
-      res.status(400).json({ error: "Required data missing!" });
-      return;
+      return res.status(400).json({ error: "Required data missing!" });
     }
 
     const isCaptchaValid = await this.verifyRecaptcha(recaptchaToken);
     if (!isCaptchaValid) {
-      return res.status(400).json({ error: 'Bad recaptcha response!' });
+      return res.status(400).json({ error: "Bad recaptcha response!" });
     }
-  
+
     try {
       const user = await this.userDAO.login(oib, password);
-  
       if (!user) {
-        res.status(401).json({ error: "Invalid OIB or password!" });
-        return;
+        la.count++;
+        la.lastAttempt = new Date().toISOString();
+        req.session.loginAttempts = la;
+
+        return res.status(401).json({
+          error: "Invalid OIB or password!",
+          attemptsLeft: Math.max(0, this.MAX_ATTEMPTS - la.count),
+          retryAfter: la.count >= this.MAX_ATTEMPTS
+            ? Math.ceil(this.LOCK_TIME_MS / 1000)
+            : 0
+        });
       }
-  
+
+      req.session.loginAttempts = { count: 0, lastAttempt: null };
+
       const type = await this.userDAO.getNameUserType(oib);
-  
       if (user.TOTP_enabled) {
-        res.status(200).json({ requiresTOTP: true });
+        return res.status(200).json({ requiresTOTP: true });
       } else {
         req.session.user = {
           oib: user.oib,
           type: type[0]?.name || "Unknown",
           email: user.email
         };
-        res.status(200).json({ success: "Login successful!" });
+        return res.status(200).json({ success: "Login successful!" });
       }
     } catch (err) {
       console.error("Login error:", err);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 
@@ -313,6 +339,27 @@ class RESTuser {
     
     return data.success && data.score > 0.5;
   }
+
+  async getTryCount(req, res) {
+    res.type("application/json");
+    const { count, lastAttempt } = req.session.loginAttempts;
+    const now = Date.now();
+    let retryAfter = 0, attemptsLeft = this.MAX_ATTEMPTS - count;
+  
+    if (count >= this.MAX_ATTEMPTS) {
+      const unlockAt = new Date(lastAttempt).getTime() + this.LOCK_TIME_MS;
+      if (now < unlockAt) {
+        retryAfter = Math.ceil((unlockAt - now) / 1000);
+        attemptsLeft = 0;
+      } else {
+        req.session.loginAttempts.count = 0;
+        req.session.loginAttempts.lastAttempt = null;
+        attemptsLeft = this.MAX_ATTEMPTS;
+      }
+    }
+  
+    res.status(200).json({ count, attemptsLeft, retryAfter, lastAttempt });
+  }  
     
 }
 

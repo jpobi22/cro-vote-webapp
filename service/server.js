@@ -43,7 +43,7 @@ try{
         secret: 'e20ed240083408e2d7019f461ee205f28814fbfab11d1d3196',
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: true, expires: new Date(Date.now() + 3600000) }
+        cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'None' }
     }));
 
     const restUser = new RESTuser();
@@ -57,6 +57,9 @@ try{
     server.use((req, res, next) => {
         if (req.protocol === 'http') {
             return res.redirect(301, `https://${req.headers.host}${req.url}`);
+        }
+        if (!req.session.loginAttempts) {
+            req.session.loginAttempts = { count: 0, lastAttempt: null };
         }
         next();
     });
@@ -74,6 +77,7 @@ try{
     server.post("/api/login", restUser.login.bind(restUser));
     server.post("/api/verify-totp", restUser.verifyTotp.bind(restUser));
     server.post("/api/changing-password", restUser.changePassword.bind(restUser));
+    server.get("/api/login-tries", restUser.getTryCount.bind(restUser));
     server.get("/api/navigation", restNavigation.getNavigaciju.bind(restNavigation));
     
     server.get("/change-password", (req, res) => {

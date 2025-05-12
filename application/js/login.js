@@ -117,14 +117,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const lblError = document.getElementById("lblError");
         lblError.innerHTML = "";
     
-        const lockInfo = JSON.parse(localStorage.getItem("loginLock"));
-        const now = Date.now();
-    
-        if (lockInfo && lockInfo.count >= 3 && now < lockInfo.unlockTime) {
-            const minutes = Math.ceil((lockInfo.unlockTime - now) / 60000);
-            lblError.innerHTML = `Previše pokušaja. Pokušaj ponovno za ${minutes} min.`;
-            return;
-        }
+        try {
+            const lockCheck = await fetch('/api/login-tries');            
+            const lockData = await lockCheck.json();            
+        
+            if (lockData.attemptsLeft === 0) {
+                const mins = Math.ceil(lockData.retryAfter / 60);
+                lblError.innerHTML = `Previše pokušaja. Pokušaj ponovno za ${mins} min.`;
+                return;
+            }
+        } catch (e) {
+            console.error("Greška kod provjere pokušaja:", e);
+        }        
     
         function validateOIB(oib) {
             if (!/^\d{11}$/.test(oib)) return false;
@@ -158,24 +162,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify(data)
             });
     
+            if (response.status === 429) {
+                const result = await response.json();
+                const mins = Math.ceil(result.retryAfter / 60);
+                lblError.textContent = `Previše pokušaja. Pokušajte ponovno za ${mins} min.`;
+                return;
+            }            
+
             const result = await response.json();
-    
+
+            if (!response.ok && result.error) {
+                if (result.attemptsLeft !== undefined) {
+                    if (result.attemptsLeft === 0) {
+                        const mins = Math.ceil(result.retryAfter / 60);
+                        lblError.innerHTML = `Previše pokušaja. Pokušaj ponovno za ${mins} min.`;
+                    } else {
+                        lblError.innerHTML = `Neispravan OIB ili lozinka. Preostalo pokušaja: ${result.attemptsLeft}`;
+                    }
+                } else {
+                    lblError.innerHTML = "Neispravan OIB ili lozinka.";
+                }
+                return;
+            }            
+
             if (response.ok && result.success === "Login successful!") {
-                localStorage.removeItem("loginLock");
                 window.location.href = "/";
             } else if (response.ok && result.requiresTOTP) {
                 showTotpModal();
             } else {
                 lblError.innerHTML = "Neispravan OIB ili lozinka.";
-    
-                let attempts = lockInfo || { count: 0, unlockTime: 0 };
-                attempts.count += 1;
-    
-                if (attempts.count >= 3) {
-                    attempts.unlockTime = now + 30 * 60 * 1000;
-                }
-    
-                localStorage.setItem("loginLock", JSON.stringify(attempts));
             }
         } catch (error) {
             console.error('Error:', error);
