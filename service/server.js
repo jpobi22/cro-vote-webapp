@@ -1,6 +1,9 @@
 const express = require("express");
 const session=require('express-session');
+const morgan = require('morgan');
+const logger = require('../log/logger.js');
 const { createToken, checkToken } = require("./modules/jwtModul.js");
+const fs = require('fs');
 const path = require("path");
 const cors = require("cors");
 const RESTuser = require("./rest/RESTuser.js");
@@ -15,6 +18,9 @@ try{
     server.use(cors());
     server.use(express.json());
     server.use(express.urlencoded({ extended: true }));
+    const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', '../../log/logs/all-logging.log'), { flags: 'a' });
+
+    server.use(morgan('combined', { stream: accessLogStream }));
     
     server.use(session(
     { 
@@ -121,6 +127,13 @@ try{
                 res.status(406).json({ Error: "Invalid token!" }); 
                 return;
             }
+
+            const { method, originalUrl } = req;
+            const timestamp = new Date().toISOString();
+            const user = req.session.user || {};
+            const { oib = 'N/A', email = 'N/A', type = 'N/A' } = user;
+
+            logger.info(`JWT valid | Time: ${timestamp} | Method: ${method} | Path: ${originalUrl} | OIB: ${oib} | Email: ${email} | Role: ${type}`);
             
             next(); 
         } catch (err) {
@@ -135,7 +148,8 @@ try{
     server.post("/api/user/totp/disable/:oib", restUser.disableTotp.bind(restUser));
     
     server.listen(port, () => {
-        console.log("Server pokrenut na: " + startUrl + port);
+        logger.info('Server started at:' + startUrl + port);
+        console.log("Server started at: " + startUrl + port);
     })
     
 }
