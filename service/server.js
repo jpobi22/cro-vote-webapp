@@ -1,6 +1,7 @@
 const express = require("express");
 const session=require('express-session');
 const morgan = require('morgan');
+const https = require('https');
 const logger = require('../log/logger.js');
 const { createToken, checkToken } = require("./modules/jwtModul.js");
 const fs = require('fs');
@@ -12,7 +13,17 @@ const RESTnavigation = require("./rest/RESTnavigation.js");
 
 const server = express();
 const port = 8000;
-const startUrl = "http://localhost:";
+const startUrl = "https://localhost:";
+
+const privateKey = fs.readFileSync(path.join(__dirname, '../certificates/private.key'), 'utf8');
+const certificate = fs.readFileSync(path.join(__dirname, '../certificates/certificate.crt'), 'utf8');
+const ca = fs.readFileSync(path.join(__dirname, '../certificates/ca.key'), 'utf8');
+
+const credentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca
+};
 
 try{
     server.use(cors());
@@ -31,7 +42,7 @@ try{
         secret: 'e20ed240083408e2d7019f461ee205f28814fbfab11d1d3196',
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: false, expires: new Date(Date.now() + 3600000) }
+        cookie: { secure: true, expires: new Date(Date.now() + 3600000) }
     }));
 
     const restUser = new RESTuser();
@@ -41,6 +52,13 @@ try{
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
     server.use("/images", express.static(path.join(__dirname, "../application/resources/images")));
     server.use("/icons", express.static(path.join(__dirname, "../application/resources/icons")));
+
+    server.use((req, res, next) => {
+        if (req.protocol === 'http') {
+            return res.redirect(301, `https://${req.headers.host}${req.url}`);
+        }
+        next();
+    });
     
     server.get("/login", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/login.html"));        
@@ -150,10 +168,10 @@ try{
     server.post("/api/user/totp/enable/:oib", restUser.enableTotp.bind(restUser));
     server.post("/api/user/totp/disable/:oib", restUser.disableTotp.bind(restUser));
     
-    server.listen(port, () => {
+    https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);
         console.log("Server started at: " + startUrl + port);
-    })
+    });
     
 }
 catch(err){
