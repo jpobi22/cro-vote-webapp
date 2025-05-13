@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cro vote</title>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LfW5DUrAAAAAAcgKVIkI2DCgzeHVZwlPoe9Eu0e"></script>
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/all-files.css">
@@ -15,9 +16,6 @@
                 <h1>Cro Vote</h1>
             </div>
             <div id="nav">
-                <a href="/login">Login</a>
-                <a href="/about-us">About us</a>
-                <a href="/privacy-policy">Privacy policy</a>
             </div>
             <div id="logo">
                 <img id="logoImg" src="/images/logo.png" alt="Logo cro vote">
@@ -37,7 +35,23 @@
                     <a href="/change-password">Ne znaš lozinku? Promijeni je.</a>
                     <a href="/register">Nemaš račun? Registriraj se.</a>
                 </div>
+                <input type="hidden" name="recaptcha_token" id="recaptcha-token">
             </form>
+            <div id="totpModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeTotp">&times;</span>
+                    <h2>Unesite TOTP kod</h2>
+                    <div class="totp-inputs">
+                        <input type="text" maxlength="1" id="totp-1" class="totp-input">
+                        <input type="text" maxlength="1" id="totp-2" class="totp-input">
+                        <input type="text" maxlength="1" id="totp-3" class="totp-input">
+                        <input type="text" maxlength="1" id="totp-4" class="totp-input">
+                        <input type="text" maxlength="1" id="totp-5" class="totp-input">
+                        <input type="text" maxlength="1" id="totp-6" class="totp-input">
+                    </div>
+                    <p id="totpError" style="color: red;"></p>
+                </div>
+            </div>                       
         </div>
     </main>
     <footer>

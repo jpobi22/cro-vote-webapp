@@ -10,8 +10,35 @@ class UserDAO {
         return await this.db.executeQuery("SELECT * FROM user WHERE oib = ?", [oib]);
     }
 
+    async getUserByEmail(oib, email) {
+        return await this.db.executeQuery("SELECT * FROM user WHERE oib = ? AND email = ?", [oib, email]);
+    }
+
     async oibExists(oib) {
         return await this.db.executeQuery("SELECT * FROM user WHERE oib = ?", [oib]);
+    }
+
+    async totpEnabled(oib) {
+        return await this.db.executeQuery("SELECT TOTP_enabled FROM user WHERE oib = ?", [oib]);
+    }
+
+    async getTotpSecretKey(oib) {
+        return await this.db.executeQuery("SELECT TOTP_secret_key FROM user WHERE oib = ?", [oib]);
+    }
+
+    async setTotp(oib, enabled) {
+        const sql = `UPDATE user SET TOTP_enabled = ? WHERE oib = ?`;
+        return await this.db.executeQuery(sql, [enabled, oib]);
+    }
+
+    async setSecretKey(oib, key) {
+        const sql = `UPDATE user SET TOTP_secret_key = ? WHERE oib = ?`;
+        return await this.db.executeQuery(sql, [key, oib]);
+    }
+
+    async changePassword(oib, password, email) {
+        const sql = `UPDATE user SET password = ? WHERE oib = ? AND email = ?`;
+        return await this.db.executeQuery(sql, [password, oib, email]);
     }
 
     async getNameUserType(oib) {
@@ -32,7 +59,7 @@ class UserDAO {
             user.phone,
             user.email,
             user.TOTP_enabled,
-            user.TOTP_secred_key,
+            user.TOTP_secret_key,
             user.password
         ]);
     }

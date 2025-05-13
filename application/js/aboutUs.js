@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (error) {
             console.error("Error getting navigation:", error);
         }
-    }
+    }    
     
 });
 

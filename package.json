@@ -30,6 +30,14 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "mysql2": "^3.14.1"
+    "https": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.14.1",
+    "nodemailer": "^7.0.3",
+    "qrcode": "^1.5.4",
+    "recaptcha-v3": "^1.11.3",
+    "speakeasy": "^2.0.0",
+    "winston": "^3.17.0"
   }
 }

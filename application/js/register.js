@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
+    getNavigation();
     const form = document.querySelector("form");
 
     form.addEventListener("submit", async function(event) {
@@ -15,6 +16,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const email = form.querySelector("input[name='email']").value.trim();
         const password = form.querySelector("input[name='password']").value.trim();
         const confirm = form.querySelector("input[name='confirm-password']").value.trim();
+
+        const recaptchaToken = await grecaptcha.execute(
+            "6LfW5DUrAAAAAAcgKVIkI2DCgzeHVZwlPoe9Eu0e",
+            { action: "login" }
+        );
+
+        document.getElementById("recaptcha-token").value = recaptchaToken;
 
         function validateOIB(oib) {
             if (!/^\d{11}$/.test(oib)) return false;
@@ -70,7 +78,8 @@ document.addEventListener("DOMContentLoaded", function() {
             address,
             phone,
             email,
-            password
+            password,
+            recaptchaToken
         };
 
         try {
@@ -111,4 +120,58 @@ document.addEventListener("DOMContentLoaded", function() {
             lblError.innerHTML = "Greška u komunikaciji sa serverom.";
         }
     });
+
+    async function getNavigation() {
+        try {
+            const response = await fetch('/api/navigation');
+            const result = await response.json();
+    
+            if (response.ok && result.navigation) {
+                const navElement = document.getElementById("nav");
+                navElement.innerHTML = "";
+    
+                result.navigation.forEach(item => {
+                    const link = document.createElement("a");
+                    link.href = item.link;
+                    link.textContent = item.LinkName;
+    
+                    if (item.LinkName === "Logout") {
+                        link.id = "logout";
+                        link.addEventListener("click", async (e) => {
+                            e.preventDefault();
+    
+                            try {
+                                const jwtRes = await fetch("/api/getJWT");
+                                const jwtData = await jwtRes.json();
+    
+                                if (jwtRes.ok && jwtData.token) {
+                                    const headers = new Headers();
+                                    headers.append("Authorization", jwtData.token);
+    
+                                    const logoutRes = await fetch("/api/logout", {
+                                        method: "GET",
+                                        headers: headers
+                                    });
+    
+                                    if (logoutRes.redirected) {
+                                        window.location.href = logoutRes.url;
+                                    } else {
+                                        console.error("Logout failed.");
+                                    }
+                                } else {
+                                    console.error("Failed to fetch JWT token.");
+                                }
+                            } catch (err) {
+                                console.error("Logout error:", err);
+                            }
+                        });
+                    }
+    
+                    navElement.appendChild(link);
+                });
+            }
+        } catch (error) {
+            console.error("Error getting navigation:", error);
+        }
+    }
 });
