@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require("path");
 const cors = require("cors");
 const RESTuser = require("./rest/RESTuser.js");
+const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
 
 
@@ -173,6 +174,9 @@ try{
     server.post("/api/user/totp/enable/:oib", restUser.enableTotp.bind(restUser));
     server.post("/api/user/totp/disable/:oib", restUser.disableTotp.bind(restUser));
     
+    const restPost = new RESTpost();
+    server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
+
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);
         console.log("Server started at: " + startUrl + port);
