@@ -5,21 +5,21 @@ DROP TABLE IF EXISTS `post`;
 DROP TABLE IF EXISTS `user_post`;
 DROP TABLE IF EXISTS `choices`;
 DROP TABLE IF EXISTS `user_type`;
-CREATE TABLE "cro_voting"."post"(
-  "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "name" VARCHAR(100) NOT NULL,
-  "description" VARCHAR(1000) NOT NULL,
-  "isActive" INTEGER NOT NULL
+
+CREATE TABLE `cro_voting`.`post`(
+  `id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `description` VARCHAR(1000) NOT NULL,
+  `isActive` INTEGER
 );
 CREATE TABLE `cro_voting`.`user_type`(
   `id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
   `name` VARCHAR(45) NOT NULL
 );
 CREATE TABLE `cro_voting`.`choices`(
-  `id` INTEGER NOT NULL,
+  `id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
   `name` VARCHAR(45) NOT NULL,
   `post_id` INTEGER NOT NULL,
-  PRIMARY KEY(`id`,`post_id`),
   CONSTRAINT `fk_choices_post1`
     FOREIGN KEY(`post_id`)
     REFERENCES `post`(`id`)
@@ -43,8 +43,7 @@ CREATE TABLE `cro_voting`.`user_post`(
   `user_oib` VARCHAR(11) NOT NULL,
   `post_id` INTEGER NOT NULL,
   `voted_time` DATETIME,
-  `user_postcol` VARCHAR(45),
-  `choices_id` INTEGER NOT NULL,
+  `choices_id` INTEGER,
   PRIMARY KEY(`post_id`,`user_oib`),
   CONSTRAINT `user_oib_UNIQUE`
     UNIQUE(`user_oib`),
@@ -67,17 +66,17 @@ LOCK TABLES `user` WRITE, `post` WRITE, `user_type` WRITE, `user_post` WRITE, `c
 INSERT INTO user_type (id, name) VALUES (1, 'Admin'),(2, 'Voter');
 INSERT INTO user (oib, id_user_type, name, surname, address, phone, email, TOTP_enabled, TOTP_secret_key, password)
 VALUES ('12345678903', 2, 'Ana', 'Anić', 'Ulica 1, Zagreb', '0911234567', 'ana@me.com', 0, 'Not generated!', '$2b$10$jxyZd5pdKQolBvfnJJ7SB.PqPpzZe487G9Go.yZ/O1vKq0CzETZPG'),('00000000001', 1, 'Ivan', 'Ivić', 'Ulica 2, Split', '0922345678', 'peropetar12345678@gmail.com', 0, 'Not generated!', '$2b$10$jxyZd5pdKQolBvfnJJ7SB.PqPpzZe487G9Go.yZ/O1vKq0CzETZPG');
-INSERT INTO post (id, name, description) VALUES (1, 'Glasanje za predsjednika države', 'Glasaj za svog kandidata.');
+INSERT INTO post (id, name, description, isActive) VALUES (1, 'Glasanje za predsjednika države', 'Glasaj za svog kandidata.', 1);
 INSERT INTO choices (id, name, post_id) VALUES
 (1, 'Franjo Tuđman', 2),
 (2, 'Stjepan Mesić', 2),
 (3, 'Ivo Josipović', 2),
 (4, 'Kolinda Grabar-Kitarović', 1),
 (5, 'Zoran Milanović', 1);
-INSERT INTO user_post (user_oib, post_id, voted_time, user_postcol, choices_id)
+INSERT INTO user_post (user_oib, post_id, voted_time, choices_id)
 VALUES
-('12345678901', 1, NOW(), NULL, 1),
-('23456789012', 2, NOW(), NULL, 3);
+('12345678901', 1, NOW(), 1),
+('23456789012', 2, NOW(), 3);
 UNLOCK TABLES;
 
 SELECT 
