@@ -11,6 +11,7 @@ const cors = require("cors");
 const RESTuser = require("./rest/RESTuser.js");
 const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
+const RESTchoices = require("./rest/RESTchoices.js");
 
 
 const server = express();
@@ -49,11 +50,12 @@ try{
 
     const restUser = new RESTuser();
     const restNavigation = new RESTnavigation();
-    
+    const restChoices = new RESTchoices();
     server.use("/css", express.static(path.join(__dirname, "../application/css")));
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
     server.use("/images", express.static(path.join(__dirname, "../application/resources/images")));
     server.use("/icons", express.static(path.join(__dirname, "../application/resources/icons")));
+    server.get("/api/choices", restChoices.getChoicesByPost.bind(restChoices));
 
     server.use((req, res, next) => {
         if (req.protocol === 'http') {

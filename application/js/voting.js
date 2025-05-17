@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
 });
-
 document.addEventListener("DOMContentLoaded", async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('postId');
@@ -70,16 +69,12 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     const res = await fetch(`/api/posts/${postId}`, {
-        headers: {
-            "Authorization": jwtData.token
-        }
-    });
-const postRes = await fetch(`/api/posts/${postId}`, {
     headers: {
         "Authorization": jwtData.token,
-        "Accept": "application/json" 
+        "Accept": "application/json"
     }
 });
+
 
     const postData = await res.json();
     if (!res.ok) {
@@ -87,28 +82,71 @@ const postRes = await fetch(`/api/posts/${postId}`, {
         return;
     }
 
-    const userRoleRes = await fetch("/api/user/role", {
-        headers: {
-            "Authorization": jwtData.token
-        }
-    });
-
-    const userRole = await userRoleRes.json();
-
-    // Dynamically generate content based on user role
+    // Prikazivanje naslova i opisa
     const votingMain = document.getElementById("votingMain");
     votingMain.innerHTML = `<h2>${postData.name}</h2><p>${postData.description}</p>`;
 
-    if (userRole === "Admin") {
-        votingMain.innerHTML += `<button id="manageVoting">Manage Voting</button>`;
-        document.getElementById("manageVoting").addEventListener("click", () => {
-            window.location.href = `/manage-voting?postId=${postId}`;
-        });
-    } else {
-        votingMain.innerHTML += `<button id="voteButton">Vote</button>`;
-        document.getElementById("voteButton").addEventListener("click", () => {
-            window.location.href = `/submit-vote?postId=${postId}`;
-        });
+    // Dohvati choices za ovaj post
+    const choicesRes = await fetch(`/api/choices?postId=${postId}`, {
+        headers: {
+            "Authorization": jwtData.token,
+            "Accept": "application/json"
+        }
+    });
+
+    const choicesData = await choicesRes.json();
+    if (!choicesRes.ok) {
+        console.error("Failed to load choices.");
+        return;
     }
+
+    // Dodavanje opcija za glasanje
+    const form = document.createElement("form");
+    choicesData.choices.forEach(choice => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "choice";
+        input.value = choice.id;
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(choice.name));
+        form.appendChild(label);
+        form.appendChild(document.createElement("br"));
+    });
+
+    const voteButton = document.createElement("button");
+    voteButton.textContent = "Submit Vote";
+    form.appendChild(voteButton);
+    
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const selectedChoice = form.querySelector('input[name="choice"]:checked');
+        if (selectedChoice) {
+            const voteRes = await fetch(`/api/submit-vote`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": jwtData.token
+                },
+                body: JSON.stringify({
+                    postId: postData.id,
+                    choiceId: selectedChoice.value
+                })
+            });
+
+            if (voteRes.ok) {
+                alert("Your vote has been submitted!");
+            } else {
+                alert("There was an error submitting your vote.");
+            }
+        } else {
+            alert("Please select a choice before submitting.");
+        }
+    });
+
+    votingMain.appendChild(form);
 });
+
 
