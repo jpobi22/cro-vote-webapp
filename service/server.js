@@ -190,17 +190,6 @@ try{
         logger.info('HTTP preusmjerivač pokrenut na portu 8080');
     });
     
-server.get("/api/posts/byName", async (req, res) => {
-    const postName = req.query.name;
-
-    try {
-        const postData = await restPost.getPostByName(postName);
-        res.status(200).json(postData);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch post by name" });
-    }
-});
-
 }
 catch(err){
     console.log(err);

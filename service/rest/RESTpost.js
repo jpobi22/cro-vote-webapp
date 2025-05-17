@@ -22,26 +22,5 @@ class RESTpost{
             totalPages: Math.ceil(total / limit)
         });
     }
-    async getPostByName(req, res) {
-        const postName = req.query.name;  // Preuzimamo naziv posta iz query parametra
-
-        if (!postName) {
-            return res.status(400).json({ error: "Post name is required" });
-        }
-
-        try {
-            // Dohvaćamo post iz baze prema nazivu
-            const post = await this.postDAO.getPostByName(postName);
-
-            if (!post || post.length === 0) {
-                return res.status(404).json({ error: "Post not found" });
-            }
-
-            res.status(200).json(post[0]);  // Vraćamo prvi post (ako postoji)
-        } catch (error) {
-            console.error("Error fetching post by name:", error);
-            res.status(500).json({ error: "Internal server error" });
-        }
-    }
 }
 module.exports = RESTpost;
