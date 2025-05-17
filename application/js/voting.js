@@ -56,4 +56,55 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
 });
+document.addEventListener("DOMContentLoaded", async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postName = decodeURIComponent(urlParams.get('postName')); // Preuzimamo naziv posta iz URL-a
+
+    const jwtRes = await fetch("/api/getJWT");
+    const jwtData = await jwtRes.json();
+
+    if (!jwtRes.ok || !jwtData.token) {
+        console.error("Failed to get JWT token.");
+        return;
+    }
+
+    const res = await fetch(`/api/posts/byName?name=${postName}`, { 
+        headers: {
+            "Authorization": jwtData.token // Koristimo token iz odgovora za autentifikaciju
+        }
+    });
+
+    const postData = await res.json();
+    if (!res.ok || !postData) {
+        console.error("Failed to load post data.");
+        return;
+    }
+
+    const userRoleRes = await fetch("/api/user/role", {
+        headers: {
+            "Authorization": jwtData.token // Koristimo token za provjeru uloge korisnika
+        }
+    });
+
+    const userRole = await userRoleRes.json();
+
+    // Dynamically generate content based on user role
+    const votingMain = document.getElementById("votingMain");
+    votingMain.innerHTML = `<h2>${postData.name}</h2><p>${postData.description}</p>`;
+
+    if (userRole === "Admin") {
+        votingMain.innerHTML += `<button id="manageVoting">Manage Voting</button>`;
+        document.getElementById("manageVoting").addEventListener("click", () => {
+            window.location.href = `/manage-voting?postName=${postName}`;
+        });
+    } else {
+        votingMain.innerHTML += `<button id="voteButton">Vote</button>`;
+        document.getElementById("voteButton").addEventListener("click", () => {
+            window.location.href = `/submit-vote?postName=${postName}`;
+        });
+    }
+});
+
+
+
 

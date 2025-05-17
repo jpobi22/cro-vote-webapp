@@ -30,6 +30,10 @@ main {
   width: 100%;
   max-width: 1300px;
   margin-top: 40px;
+  
+}
+.posts-grid:hover{
+  cursor: pointer;
 }
 
 .bottom-section {

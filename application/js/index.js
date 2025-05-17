@@ -98,7 +98,11 @@ document.addEventListener("DOMContentLoaded", function() {
     
             const title = document.createElement("h2");
             title.textContent = post.name;
-    
+            title.addEventListener("click", () => {
+                const postName = encodeURIComponent(post.name); // Uzimamo naziv posta kao ključnu riječ
+                window.location.href = `/voting/${postName}`; // Usmjerenje na voting s nazivom posta
+            });
+
             const desc = document.createElement("p");
             desc.textContent = post.description;
     
