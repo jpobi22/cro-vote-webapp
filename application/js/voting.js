@@ -74,6 +74,12 @@ document.addEventListener("DOMContentLoaded", async function() {
             "Authorization": jwtData.token
         }
     });
+const postRes = await fetch(`/api/posts/${postId}`, {
+    headers: {
+        "Authorization": jwtData.token,
+        "Accept": "application/json" 
+    }
+});
 
     const postData = await res.json();
     if (!res.ok) {
@@ -105,3 +111,4 @@ document.addEventListener("DOMContentLoaded", async function() {
         });
     }
 });
+

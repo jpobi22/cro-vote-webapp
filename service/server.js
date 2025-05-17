@@ -176,6 +176,7 @@ try{
     
     const restPost = new RESTpost();
     server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
+server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
 
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);

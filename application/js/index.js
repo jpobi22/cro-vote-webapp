@@ -98,10 +98,10 @@ document.addEventListener("DOMContentLoaded", function() {
     
             const title = document.createElement("h2");
             title.textContent = post.name;
-            title.addEventListener("click", () => {
+           title.addEventListener("click", () => {
                 window.location.href = `/voting?postId=${post.id}`;
             });
-            
+
             const desc = document.createElement("p");
             desc.textContent = post.description;
     
