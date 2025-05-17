@@ -1,0 +1,6 @@
+2025-05-17 13:27:52 INFO: Server started at:https://localhost:8000
+2025-05-17 13:27:52 INFO: HTTP preusmjerivač pokrenut na portu 8080
+2025-05-17 13:28:04 INFO: JWT valid | Time: 2025-05-17T11:28:04.020Z | Method: GET | Path: /api/posts?page=1 | OIB: 58944443650 | Email: pobislav@gmail.com | Role: Voter | IP: ::1
+2025-05-17 13:28:05 INFO: JWT valid | Time: 2025-05-17T11:28:05.355Z | Method: GET | Path: /api/posts/3 | OIB: 58944443650 | Email: pobislav@gmail.com | Role: Voter | IP: ::1
+2025-05-17 13:28:21 INFO: JWT valid | Time: 2025-05-17T11:28:21.887Z | Method: GET | Path: /api/posts?page=1 | OIB: 58944443650 | Email: pobislav@gmail.com | Role: Voter | IP: ::1
+2025-05-17 13:28:44 INFO: JWT valid | Time: 2025-05-17T11:28:44.000Z | Method: GET | Path: /api/posts?page=1 | OIB: 58944443650 | Email: pobislav@gmail.com | Role: Voter | IP: ::1

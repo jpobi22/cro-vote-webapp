@@ -32,6 +32,10 @@ main {
   margin-top: 40px;
 }
 
+.posts-grid:hover{
+  cursor: pointer;
+}
+
 .bottom-section {
   text-align: center;
 }
