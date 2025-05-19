@@ -108,14 +108,8 @@ class RESTuser {
     }
   }
 async getUserRole(req, res) {
-    try {
         const userRole = req.session.user ? req.session.user.type : "guest"; 
-        
         res.status(200).json(userRole);
-    } catch (err) {
-        console.error("Error fetching user role:", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
 }
 
   async getTotpStatus(req, res) {

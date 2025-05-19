@@ -25,17 +25,13 @@ class RESTpost {
 
    async getPostById(req, res) {
     const postId = req.params.postId;
-    try {
-        const post = await this.postDAO.getPostById(postId);
+    const post = await this.postDAO.getPostById(postId);
         if (post) {
             res.status(200).json(post);
-        } else {
+        } 
+        else {
             res.status(404).json({ error: "Post not found" });
         }
-    } catch (err) {
-        console.error("Error in getPostById:", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
 }
 
 }

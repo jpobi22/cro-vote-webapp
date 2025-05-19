@@ -1,5 +1,4 @@
 
-/* General page layout */
 main {
     display: flex;
     flex-direction: column;
@@ -12,7 +11,7 @@ main {
 
 }
 
-/* Voting form styles */
+
 form {
     background-color: #fff;
     border-radius: 10px;
@@ -23,7 +22,7 @@ form {
     margin: 20px 0;
 }
 
-/* Label styles for choices */
+
 label {
     display: block;
     margin-bottom: 10px;
@@ -31,13 +30,13 @@ label {
     color: #333;
 }
 
-/* Style for radio button inputs */
+
 input[type="radio"] {
     margin-right: 10px;
     cursor: pointer;
 }
 
-/* Submit button styles */
+
 button {
     background-color: #007acc;
     color: #fff;
@@ -54,13 +53,13 @@ button:hover {
     background-color: #005c99;
 }
 
-/* Disable the button if no choice is selected */
+
 button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
 
-/* Heading styles */
+
 h2 {
     color: #333;
     font-size: 28px;
@@ -68,7 +67,7 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* Paragraph style for description */
+
 p {
     font-size: 18px;
     color: #666;
@@ -76,7 +75,7 @@ p {
     margin-bottom: 30px;
 }
 
-/* Styling for error messages */
+
 .error {
     color: red;
     font-size: 16px;

@@ -8,13 +8,8 @@ class RESTchoices {
 
     async getChoicesByPost(req, res) {
         const postId = req.query.postId; 
-        try {
-            const choices = await this.choicesDAO.getChoicesByPost(postId);
-            res.status(200).json({ choices });
-        } catch (err) {
-            console.error("Error fetching choices:", err);
-            res.status(500).json({ error: "Internal server error" });
-        }
+        const choices = await this.choicesDAO.getChoicesByPost(postId);
+        res.status(200).json({ choices });
     }
 }
 

@@ -82,11 +82,11 @@ document.addEventListener("DOMContentLoaded", async function() {
         return;
     }
 
-    // Prikazivanje naslova i opisa
+   
     const votingMain = document.getElementById("votingMain");
     votingMain.innerHTML = `<h2>${postData.name}</h2><p>${postData.description}</p>`;
 
-    // Dohvati choices za ovaj post
+  
     const choicesRes = await fetch(`/api/choices?postId=${postId}`, {
         headers: {
             "Authorization": jwtData.token,
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         return;
     }
 
-    // Dodavanje opcija za glasanje
+  
     const form = document.createElement("form");
     choicesData.choices.forEach(choice => {
         const label = document.createElement("label");
