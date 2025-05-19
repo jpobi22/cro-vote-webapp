@@ -175,11 +175,11 @@ try{
     server.get("/api/user/totp/enabled/:oib", restUser.getTotpStatus.bind(restUser));
     server.post("/api/user/totp/enable/:oib", restUser.enableTotp.bind(restUser));
     server.post("/api/user/totp/disable/:oib", restUser.disableTotp.bind(restUser));
-server.get("/api/user/role", restUser.getUserRole.bind(restUser));
+    server.get("/api/user/role", restUser.getUserRole.bind(restUser));
 
     const restPost = new RESTpost();
     server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
-server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
+    server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
 
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);

@@ -23,7 +23,7 @@ class RESTpost {
         });
     }
 
-   async getPostById(req, res) {
+    async getPostById(req, res) {
     const postId = req.params.postId;
     const post = await this.postDAO.getPostById(postId);
         if (post) {

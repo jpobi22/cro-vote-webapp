@@ -4,10 +4,11 @@ class PostDAO {
     constructor() {
         this.db = new DB();
     }
-async getPostById(postId) {
+    
+    async getPostById(postId) {
     const result = await this.db.executeQuery("SELECT * FROM post WHERE id = ?", [postId]);
     return result[0]; 
-}
+    }
 
     async getPostsPaginated(limit, offset) {
         return await this.db.executeQuery("SELECT * FROM post WHERE isActive = 1 LIMIT ? OFFSET ?", [limit, offset]);
