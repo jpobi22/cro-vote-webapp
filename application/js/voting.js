@@ -56,4 +56,97 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
 });
+document.addEventListener("DOMContentLoaded", async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('postId');
+    
+    const jwtRes = await fetch("/api/getJWT");
+    const jwtData = await jwtRes.json();
+
+    if (!jwtRes.ok || !jwtData.token) {
+        console.error("Failed to get JWT token.");
+        return;
+    }
+
+    const res = await fetch(`/api/posts/${postId}`, {
+    headers: {
+        "Authorization": jwtData.token,
+        "Accept": "application/json"
+    }
+});
+
+
+    const postData = await res.json();
+    if (!res.ok) {
+        console.error("Failed to load post data.");
+        return;
+    }
+
+   
+    const votingMain = document.getElementById("votingMain");
+    votingMain.innerHTML = `<h2>${postData.name}</h2><p>${postData.description}</p>`;
+
+  
+    const choicesRes = await fetch(`/api/choices?postId=${postId}`, {
+        headers: {
+            "Authorization": jwtData.token,
+            "Accept": "application/json"
+        }
+    });
+
+    const choicesData = await choicesRes.json();
+    if (!choicesRes.ok) {
+        console.error("Failed to load choices.");
+        return;
+    }
+
+  
+    const form = document.createElement("form");
+    choicesData.choices.forEach(choice => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "choice";
+        input.value = choice.id;
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(choice.name));
+        form.appendChild(label);
+        form.appendChild(document.createElement("br"));
+    });
+
+    const voteButton = document.createElement("button");
+    voteButton.textContent = "Submit Vote";
+    form.appendChild(voteButton);
+    
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const selectedChoice = form.querySelector('input[name="choice"]:checked');
+        if (selectedChoice) {
+            const voteRes = await fetch(`/api/submit-vote`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": jwtData.token
+                },
+                body: JSON.stringify({
+                    postId: postData.id,
+                    choiceId: selectedChoice.value
+                })
+            });
+
+            if (voteRes.ok) {
+                alert("Your vote has been submitted!");
+            } else {
+                alert("There was an error submitting your vote.");
+            }
+        } else {
+            alert("Please select a choice before submitting.");
+        }
+    });
+
+    votingMain.appendChild(form);
+});
+
 

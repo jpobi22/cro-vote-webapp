@@ -107,6 +107,10 @@ class RESTuser {
         res.status(500).json({ error: "Internal server error" });
     }
   }
+async getUserRole(req, res) {
+        const userRole = req.session.user ? req.session.user.type : "guest"; 
+        res.status(200).json(userRole);
+}
 
   async getTotpStatus(req, res) {
     res.type("application/json");

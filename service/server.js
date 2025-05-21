@@ -9,7 +9,9 @@ const fs = require('fs');
 const path = require("path");
 const cors = require("cors");
 const RESTuser = require("./rest/RESTuser.js");
+const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
+const RESTchoices = require("./rest/RESTchoices.js");
 
 
 const server = express();
@@ -48,11 +50,12 @@ try{
 
     const restUser = new RESTuser();
     const restNavigation = new RESTnavigation();
-    
+    const restChoices = new RESTchoices();
     server.use("/css", express.static(path.join(__dirname, "../application/css")));
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
     server.use("/images", express.static(path.join(__dirname, "../application/resources/images")));
     server.use("/icons", express.static(path.join(__dirname, "../application/resources/icons")));
+    server.get("/api/choices", restChoices.getChoicesByPost.bind(restChoices));
 
     server.use((req, res, next) => {
         if (req.protocol === 'http') {
@@ -172,7 +175,12 @@ try{
     server.get("/api/user/totp/enabled/:oib", restUser.getTotpStatus.bind(restUser));
     server.post("/api/user/totp/enable/:oib", restUser.enableTotp.bind(restUser));
     server.post("/api/user/totp/disable/:oib", restUser.disableTotp.bind(restUser));
-    
+    server.get("/api/user/role", restUser.getUserRole.bind(restUser));
+
+    const restPost = new RESTpost();
+    server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
+    server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
+
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);
         console.log("Server started at: " + startUrl + port);
