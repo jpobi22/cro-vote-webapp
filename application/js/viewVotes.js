@@ -53,9 +53,10 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (error) {
             console.error("Error getting navigation:", error);
         }
-    }
+    }    
     
 });
+
 document.addEventListener("DOMContentLoaded", async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('postId');
@@ -68,25 +69,30 @@ document.addEventListener("DOMContentLoaded", async function() {
         return;
     }
 
+    const roleRes = await fetch("/api/user/role", {
+        headers: {
+            "Authorization": jwtData.token
+        }
+    });
+    
+    const roleData = await roleRes.json();
+    
     const res = await fetch(`/api/posts/${postId}`, {
         headers: {
             "Authorization": jwtData.token,
             "Accept": "application/json"
         }
     });
-
-
     const postData = await res.json();
     if (!res.ok) {
-        console.error("Failed to load post data.");
+        console.error("Failed to load view post data.");
         return;
     }
 
    
-    const votingMain = document.getElementById("votingMain");
-    votingMain.innerHTML = `<h2>${postData.name}</h2><p>${postData.description}</p>`;
+    const viewMain = document.getElementById("viewMain");
+    viewMain.innerHTML = `<h2>${postData.name}</h2><p>${postData.description}</p>`;
 
-  
     const choicesRes = await fetch(`/api/choices?postId=${postId}`, {
         headers: {
             "Authorization": jwtData.token,
@@ -100,53 +106,39 @@ document.addEventListener("DOMContentLoaded", async function() {
         return;
     }
 
-  
-    const form = document.createElement("form");
-    choicesData.choices.forEach(choice => {
-        const label = document.createElement("label");
-        const input = document.createElement("input");
-        input.type = "radio";
-        input.name = "choice";
-        input.value = choice.id;
-
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(choice.name));
-        form.appendChild(label);
-        form.appendChild(document.createElement("br"));
-    });
-
-    const voteButton = document.createElement("button");
-    voteButton.textContent = "Submit Vote";
-    form.appendChild(voteButton);
-    
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        const selectedChoice = form.querySelector('input[name="choice"]:checked');
-        if (selectedChoice) {
-            const voteRes = await fetch(`/api/submit-vote`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": jwtData.token
-                },
-                body: JSON.stringify({
-                    postId: postData.id,
-                    choiceId: selectedChoice.value
-                })
-            });
-
-            if (voteRes.ok) {
-                alert("Your vote has been submitted!");
-            } else {
-                alert("There was an error submitting your vote.");
+    if (roleData === "Admin") {
+        const statsRes = await fetch(`/api/stats?postId=${postId}`, {
+            headers: {
+                "Authorization": jwtData.token,
+                "Accept": "application/json"
             }
-        } else {
-            alert("Please select a choice before submitting.");
+        });
+        const statsData = await statsRes.json();
+    
+        if (!statsRes.ok) {
+            console.error("Failed to load vote statistics.");
+            return;
         }
-    });
+    
+        const statsContainer = document.createElement("div");
+        statsContainer.classList.add("stats-container");
 
-    votingMain.appendChild(form);
+        const statsTitle = document.createElement("h2");
+        statsTitle.textContent = "Rezultati glasanja";
+        statsContainer.appendChild(statsTitle);
+
+        const statsDetails = document.createElement("div");
+        statsDetails.classList.add("stats-details");
+
+        statsData.stats.forEach(stat => {
+            const p = document.createElement("p");
+            p.innerHTML = `<strong>${stat.choiceName}:</strong> ${stat.voteCount} glasova (od ${stat.totalVotes})`;
+            statsDetails.appendChild(p);
+        });
+
+        statsContainer.appendChild(statsDetails);
+        viewMain.appendChild(statsContainer);
+
+    }
+
 });
-
-

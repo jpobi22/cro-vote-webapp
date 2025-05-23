@@ -6,7 +6,9 @@
     <title>Cro vote</title>
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/all-files.css">
-    <link rel="stylesheet" href="/css/manageVotings.css">
+    <link rel="stylesheet" href="/css/viewVotes.css">
+    <link rel="icon" href="data:," />
+
 </head>
 <body>
     <header>
@@ -23,23 +25,9 @@
                 <img id="logoImg" src="/images/logo.png" alt="Logo cro vote" width="150" height="120">
             </div>
         </div>
-
     </header>
-    <main>
-        <section class = "top-section">
-            <h1>Glasanja su ovdje, dobrodošli u aplikaciju!</h1>
-        </section>
-        <section class = "grid-section">
-            <div id="posts-container" class="posts-grid"></div>
-        </section>
+    <main id="viewMain">
 
-        <section class = "bottom-section">
-            <div class="pagination">
-                <button id="prevPage">Prethodna</button>
-                <span id="pageInfo"></span>
-                <button id="nextPage">Sljedeća</button>
-            </div>
-        </section>
     </main>
     <footer>
         <div class="footer-content">
@@ -53,5 +41,5 @@
     </footer>
     
 </body>
-<script src="/js/manageVotings.js"></script>
+<script src="/js/viewVotes.js"></script>
 </html>

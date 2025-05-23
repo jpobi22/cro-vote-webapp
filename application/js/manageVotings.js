@@ -1,6 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
     getNavigation();
 
+    const postsContainer = document.getElementById("posts-container");
+    const prevBtn = document.getElementById("prevPage");
+    const nextBtn = document.getElementById("nextPage");
+    const pageInfo = document.getElementById("pageInfo");
+    let currentPage = 1;
+    let totalPages = 1;
+
     async function getNavigation() {
         try {
             const response = await fetch('/api/navigation');
@@ -55,5 +62,80 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
+    async function fetchPosts(page = 1) {
+        const jwtRes = await fetch("/api/getJWT");
+        const jwtData = await jwtRes.json();
+
+        if (!jwtRes.ok || !jwtData.token) {
+            throw new Error("Failed to get JWT");
+        }
+        const roleRes = await fetch("/api/user/role", {
+            headers: {
+                "Authorization": jwtData.token
+            }
+        });
+        
+        const roleData = await roleRes.json();
+        
+
+        const res = await fetch(`/api/posts-admin?page=${page}`, {
+            headers: {
+                "Authorization": jwtData.token
+            }
+        });
+        
+    
+        const data = await res.json();
+    
+        if (!res.ok) {
+            throw new Error(data.error || "Error fetching posts");
+        }
+    
+        renderPosts(data.posts);
+        currentPage = data.page;
+        totalPages = data.totalPages;
+        updatePagination();
+        
+    }
+    
+    function renderPosts(posts) {
+        postsContainer.innerHTML = "";
+    
+        posts.forEach(post => {
+            const tile = document.createElement("div");
+            tile.className = "tile";
+    
+            const title = document.createElement("h2");
+            title.textContent = post.name;
+            title.addEventListener("click", () => {
+                window.location.href = `/viewVotes?postId=${post.id}`;
+            });
+
+            const desc = document.createElement("p");
+            desc.textContent = post.description;
+    
+            tile.appendChild(title);
+            tile.appendChild(desc);
+    
+            postsContainer.appendChild(tile);
+        });
+    }
+    
+    function updatePagination() {
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevBtn.disabled = currentPage <= 1;
+        nextBtn.disabled = currentPage >= totalPages;
+    }
+    
+    prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) fetchPosts(currentPage - 1);
+    });
+    
+    nextBtn.addEventListener("click", () => {
+        if (currentPage < totalPages) fetchPosts(currentPage + 1);
+    });
+    
+    fetchPosts();
+
 });
 

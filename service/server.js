@@ -95,6 +95,10 @@ try{
         res.sendFile(path.join(__dirname, "../application/html/privacyPolicy.html"));
     })
     
+    server.get("/viewVotes", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/viewVotes.html"));
+    })
+
     server.all(/(.*)/, (req, res, next) => {
         if (req.session.user == null) {
             return res.redirect("/login");
@@ -179,7 +183,11 @@ try{
 
     const restPost = new RESTpost();
     server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
+    server.get("/api/posts-admin", restPost.getAllPostsPaginated.bind(restPost));
     server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
+    server.post("/api/posts/:postId", restPost.toggleIsActive.bind(restPost));
+    server.get("/api/stats", restPost.getVoteStats.bind(restPost));
+
 
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);
