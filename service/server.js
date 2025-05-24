@@ -13,7 +13,6 @@ const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
 const RESTchoices = require("./rest/RESTchoices.js");
 
-
 const server = express();
 const port = 8000;
 const startUrl = "https://localhost:";
@@ -47,7 +46,7 @@ try{
         saveUninitialized: false,
         cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'None' }
     }));
-
+    
     const restUser = new RESTuser();
     const restNavigation = new RESTnavigation();
     const restChoices = new RESTchoices();
@@ -95,6 +94,10 @@ try{
         res.sendFile(path.join(__dirname, "../application/html/privacyPolicy.html"));
     })
     
+    server.get("/viewVotes", (req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/viewVotes.html"));
+    })
+
     server.all(/(.*)/, (req, res, next) => {
         if (req.session.user == null) {
             return res.redirect("/login");
@@ -179,7 +182,15 @@ try{
 
     const restPost = new RESTpost();
     server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
+    server.post("/api/posts/new-post", restPost.postNewPost.bind(restPost));
+    server.put("/api/posts-admin/:postId", restPost.deletePost.bind(restPost));
+    server.get("/api/posts-admin", restPost.getAllPostsPaginated.bind(restPost));
     server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
+    server.post("/api/posts/toggle:postId", restPost.toggleIsActive.bind(restPost));
+    
+    const restChoice = new RESTchoices();
+    server.post("/api/posts/new-choice", restChoice.postNewChoice.bind(restChoice));
+    server.get("/api/stats", restChoice.getVoteStats.bind(restChoice));
 
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);
