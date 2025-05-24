@@ -105,3 +105,15 @@ p {
     margin-right: 8px;
     font-weight: 600;
 }
+.toggle-active-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.toggle-active-button:hover {
+    background-color: #0056b3;
+}

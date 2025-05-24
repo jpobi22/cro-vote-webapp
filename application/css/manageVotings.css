@@ -193,19 +193,25 @@ main {
 .add-choice-button:hover {
   background-color: #005fa3;
 }
-
+.active-post {
+  border-color: #a3d1ff;
+  background-color: #ecf5ff;
+}
+.inactive-post {
+  border-color: #999;
+  background-color: #f5f5f5;
+  opacity: 0.7;
+}
 .input-error {
   border: 2px solid #dc3545 !important;
   box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
 }
-
 .error-message {
   color: #dc3545;
   font-size: 14px;
   margin-top: 4px;
   min-height: 18px;
 }
-
 .choice-error {
   margin-bottom: 10px;
 }

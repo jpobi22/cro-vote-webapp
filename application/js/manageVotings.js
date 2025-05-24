@@ -104,9 +104,23 @@ document.addEventListener("DOMContentLoaded", function() {
         posts.forEach(post => {
             const tile = document.createElement("div");
             tile.className = "tile";
-    
+            
+            if (post.isActive === 1) {
+                tile.classList.add("active-post");
+            } else {
+                tile.classList.add("inactive-post");
+            }
+
             const title = document.createElement("h2");
             title.textContent = post.name;
+
+            if (post.isActive === 0) {
+                const inactiveLabel = document.createElement("span");
+                inactiveLabel.textContent = " (Neaktivno)";
+                inactiveLabel.style.fontSize = "16px";
+                title.appendChild(inactiveLabel);
+            }
+            
             title.addEventListener("click", () => {
                 window.location.href = `/viewVotes?postId=${post.id}`;
             });
@@ -122,7 +136,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     function updatePagination() {
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        if(totalPages === 0){
+            totalPages = 1;
+        }
+        pageInfo.textContent = `Page ${currentPage} od ${totalPages}`;
         prevBtn.disabled = currentPage <= 1;
         nextBtn.disabled = currentPage >= totalPages;
     }
@@ -136,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
     fetchPosts();
-
+    
     const addPostBtn = document.getElementById("addPostBtn");
     const newPostForm = document.getElementById("newPostForm");
     const choicesContainer = document.getElementById("choicesContainer");

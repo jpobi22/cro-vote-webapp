@@ -10,7 +10,8 @@ CREATE TABLE `cro_voting`.`post`(
   `id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
   `name` VARCHAR(100) NOT NULL,
   `description` VARCHAR(1000) NOT NULL,
-  `isActive` INTEGER
+  `isActive` INTEGER,
+  `isDeleted` DATETIME
 );
 CREATE TABLE `cro_voting`.`user_type`(
   `id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,

@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     getNavigation();
+    initPostView();
 
     async function getNavigation() {
         try {
@@ -54,11 +55,8 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error("Error getting navigation:", error);
         }
     }    
-    
-});
-
-document.addEventListener("DOMContentLoaded", async function() {
-    const urlParams = new URLSearchParams(window.location.search);
+    async function initPostView() {
+        const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('postId');
     
     const jwtRes = await fetch("/api/getJWT");
@@ -93,20 +91,23 @@ document.addEventListener("DOMContentLoaded", async function() {
     const viewMain = document.getElementById("viewMain");
     viewMain.innerHTML = `<h2>${postData.name}</h2><p>${postData.description}</p>`;
 
-    const choicesRes = await fetch(`/api/choices?postId=${postId}`, {
-        headers: {
-            "Authorization": jwtData.token,
-            "Accept": "application/json"
-        }
-    });
-
-    const choicesData = await choicesRes.json();
-    if (!choicesRes.ok) {
-        console.error("Failed to load choices.");
-        return;
-    }
+    
 
     if (roleData === "Admin") {
+
+        const choicesRes = await fetch(`/api/choices?postId=${postId}`, {
+            headers: {
+                "Authorization": jwtData.token,
+                "Accept": "application/json"
+            }
+        });
+    
+        const choicesData = await choicesRes.json();
+        if (!choicesRes.ok) {
+            console.error("Failed to load choices.");
+            return;
+        }
+        
         const statsRes = await fetch(`/api/stats?postId=${postId}`, {
             headers: {
                 "Authorization": jwtData.token,
@@ -138,7 +139,30 @@ document.addEventListener("DOMContentLoaded", async function() {
 
         statsContainer.appendChild(statsDetails);
         viewMain.appendChild(statsContainer);
-
+        const toggleBtn = document.createElement("button");
+        toggleBtn.style.marginTop = "20px";
+        toggleBtn.textContent = postData.isActive ? "Onemogući objavu" : "Omogući objavu";
+        toggleBtn.classList.add("toggle-active-button");
+        
+        toggleBtn.addEventListener("click", async () => {
+            const toggleRes = await fetch(`/api/posts/toggle${postId}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": jwtData.token
+                }
+            });
+        
+            if (!toggleRes.ok) {
+                throw new Error("Error at toggle button.");
+            } else {
+                postData.isActive = !postData.isActive;
+                toggleBtn.textContent = postData.isActive ? "Onemogući objavu" : "Omogući objavu";
+            }
+        });
+        
+        viewMain.appendChild(toggleBtn);
+        
     }
-
+    }
 });
+

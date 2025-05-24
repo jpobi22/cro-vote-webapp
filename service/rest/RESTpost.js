@@ -84,18 +84,6 @@ class RESTpost {
     
         const result = await this.postDAO.postNewPost(name, description);
         res.status(201).json({ message: "Post created successfully", id: result });
-
-    }
-    
-    
-    async postNewChoice(req, res) {
-        const { name, post_id } = req.body;
-    
-        if (!name || post_id === undefined || post_id === null) {
-            return res.status(400).json({ error: "Missing choice name or post ID" });
-        }
-        const result = await this.postDAO.postNewChoice(name, post_id);
-        res.status(201).json({ message: "Post created successfully", result });
     }
 }
 
