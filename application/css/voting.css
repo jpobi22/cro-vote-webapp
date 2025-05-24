@@ -72,4 +72,7 @@
      text-align: center;
      margin-top: 20px;
 }
- 
+ .vote-message {
+    font-weight: bold;
+    font-size: 1rem;
+}

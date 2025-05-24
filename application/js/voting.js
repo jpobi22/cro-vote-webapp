@@ -118,24 +118,36 @@ document.addEventListener("DOMContentLoaded", async function() {
     const voteButton = document.createElement("button");
     voteButton.textContent = "Submit Vote";
     form.appendChild(voteButton);
+   
     
-   form.addEventListener("submit", async (e) => {
+
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const selectedChoice = form.querySelector('input[name="choice"]:checked');
+    const messageDiv = document.createElement("div");
+    messageDiv.style.marginTop = "10px";
+
+    // Ukloni prethodnu poruku ako postoji
+    const oldMessage = form.querySelector(".vote-message");
+    if (oldMessage) oldMessage.remove();
+
+    messageDiv.classList.add("vote-message");
+    form.appendChild(messageDiv);
+
     if (!selectedChoice) {
-        alert("Please select a choice before submitting.");
+        messageDiv.textContent = "Molimo odaberite opciju prije glasanja.";
+        messageDiv.style.color = "red";
         return;
     }
 
     try {
-        // 🔁 REFRESH JWT token prije svakog slanja
         const jwtRes = await fetch("/api/getJWT");
         const jwtData = await jwtRes.json();
 
         if (!jwtRes.ok || !jwtData.token) {
-            console.error("Neuspjelo dohvaćanje JWT tokena.");
-            alert("Došlo je do greške. Pokušajte ponovno.");
+            messageDiv.textContent = "Greška pri autentifikaciji.";
+            messageDiv.style.color = "red";
             return;
         }
 
@@ -152,20 +164,29 @@ document.addEventListener("DOMContentLoaded", async function() {
         });
 
         if (voteRes.ok) {
-            alert("Uspješno ste glasali!");
+            messageDiv.textContent = "Uspješno ste glasali!";
+            messageDiv.style.color = "green";
+            voteButton.disabled = true;
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 3000);
         } else if (voteRes.status === 409) {
-            alert("Već ste glasali za ovaj post.");
+            messageDiv.textContent = "Već ste glasali za ovaj post.";
+            messageDiv.style.color = "orange";
         } else {
             const err = await voteRes.json();
             console.error("Greška pri glasanju:", err);
-            alert("Došlo je do greške pri glasanju.");
+            messageDiv.textContent = "Došlo je do greške pri glasanju.";
+            messageDiv.style.color = "red";
         }
 
     } catch (error) {
         console.error("Pogreška tijekom slanja glasa:", error);
-        alert("Greška prilikom slanja glasa.");
+        messageDiv.textContent = "Greška prilikom slanja glasa.";
+        messageDiv.style.color = "red";
     }
 });
+
 
 
 
