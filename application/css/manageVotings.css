@@ -189,10 +189,6 @@ main {
   transition: background-color 0.3s ease;
   align-self: flex-start;
 }
-
-.add-choice-button:hover {
-  background-color: #005fa3;
-}
 .active-post {
   border-color: #a3d1ff;
   background-color: #ecf5ff;

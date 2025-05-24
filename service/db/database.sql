@@ -62,14 +62,14 @@ LOCK TABLES `user` WRITE, `post` WRITE, `user_type` WRITE, `user_post` WRITE, `c
 INSERT INTO user_type (id, name) VALUES (1, 'Admin'),(2, 'Voter');
 INSERT INTO user (oib, id_user_type, name, surname, address, phone, email, TOTP_enabled, TOTP_secret_key, password)
 VALUES ('12345678903', 2, 'Ana', 'Anić', 'Ulica 1, Zagreb', '0911234567', 'ana@me.com', 0, 'Not generated!', '$2b$10$jxyZd5pdKQolBvfnJJ7SB.PqPpzZe487G9Go.yZ/O1vKq0CzETZPG'),('00000000001', 1, 'Ivan', 'Ivić', 'Ulica 2, Split', '0922345678', 'peropetar12345678@gmail.com', 0, 'Not generated!', '$2b$10$jxyZd5pdKQolBvfnJJ7SB.PqPpzZe487G9Go.yZ/O1vKq0CzETZPG');
-INSERT INTO post (id, name, description, isActive) VALUES (1, 'e673146baa48541bc0d55b5c7dec01c5:67887d01247ae015e363d38f47d8a985', '7b9575380f25b38a1f6e8f7fe23f8e06:3ecef3bd0cdca66f0396641359f7c3e9', 1);
+INSERT INTO post (id, name, description, isActive) VALUES (1, 'bd2015e5ca8843475c3f3b11:579abbf5a010ca608100cf6c410a93213ed993dae8143390622373d1517ce357:94a81331fbccd375ac463e4851b904b2', 'bffdc7d70a26d9f1aa4de48e:5fcda35cb2ddf8b395a43f5b692e1bf116814c0ebfaa368363:8e2ad1eeebba9e6b6ab870a00f742654', 1);
 
 INSERT INTO choices (id, name, post_id) VALUES
-(1, 'd8391e80e329f17bc2599e08bc958034:d5573c0214567a548c0e64de8f54e962', 1),
-(2, 'a7440cbc32308d3ad7a5711af19a8a2b:239a4eceb42963e5063a36db0275a4e7', 1),
-(3, 'a6b742a0d39c2fb8188e68034da4eed8:28e9f31d628ea367f492ac2d5041651d', 1),
-(4, 'ab3742223aa26a9378142826c02f7fc9:5c168dadc7d4927e52fb7920d40554c1e71e9d526e4a8af7536396df928bd21e', 1),
-(5, 'd670047e7dd49222427fa897263678c0:ee82996c20764b98bd00b2e5802ac017db8ba5d5f66c7fa76b1f4d5f0e3aae0f', 1);
+(1, '74cb2c51d04434518a513693:217ce15d8fc91c2b3a55a651754d:ac8ef541c24111f137c06453f2e6d8ae', 1),
+(2, '65631919f0f2c517e243c515:fd0062bc14551fbc3b47405a5337:15a48b4c6ee410a4cd013b7ccabb53e4', 1),
+(3, 'ddb5c8b3efcb3ec8ac206cb5:baf805399000b83dc7dc2713adac:0ec45d8f7fa03ec14e51279892d92cff', 1),
+(4, '9ef5daed141265a02bd1927e:1e9f645404c5503da911849af2be2b88:2c13c261abd6423c684b6b3b2b658df8', 1),
+(5, '9b550a05485da488424b04e5:9bc70e8cc452deabdc2797ea9ca79f917cbbf7d1401e20294f:5837ecd320badb5c11118a218b72eff2', 1);
 INSERT INTO user_post (user_oib, post_id, voted_time, choices_id)
 VALUES
 ('12345678901', 1, NOW(), 1),

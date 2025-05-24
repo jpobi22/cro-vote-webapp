@@ -41,10 +41,6 @@ button {
 button:hover {
     background-color: #005c99;
 }
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
 h2 {
     color: #333;
     font-size: 28px;
