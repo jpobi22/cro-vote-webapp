@@ -5,6 +5,7 @@ const https = require('https');
 const http = require('http');
 const logger = require('../log/logger.js');
 const { createToken, checkToken } = require("./modules/jwtModul.js");
+const { isAdmin } = require("./modules/auth.guard.js");
 const fs = require('fs');
 const path = require("path");
 const cors = require("cors");
@@ -50,13 +51,11 @@ try{
     
     const restUser = new RESTuser();
     const restNavigation = new RESTnavigation();
-    const restChoices = new RESTchoices();
     server.use("/css", express.static(path.join(__dirname, "../application/css")));
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
     server.use("/images", express.static(path.join(__dirname, "../application/resources/images")));
     server.use("/icons", express.static(path.join(__dirname, "../application/resources/icons")));
-    server.get("/api/choices", restChoices.getChoicesByPost.bind(restChoices));
-
+    
     server.use((req, res, next) => {
         if (req.protocol === 'http') {
             return res.redirect(301, `https://${req.headers.host}${req.url}`);
@@ -95,10 +94,6 @@ try{
         res.sendFile(path.join(__dirname, "../application/html/privacyPolicy.html"));
     })
     
-    server.get("/viewVotes", (req, res) => {
-        res.sendFile(path.join(__dirname, "../application/html/viewVotes.html"));
-    })
-
     server.all(/(.*)/, (req, res, next) => {
         if (req.session.user == null) {
             return res.redirect("/login");
@@ -106,7 +101,7 @@ try{
             next();
         }
     });
-
+    
     server.get("/api/getJWT", (req, res) => {
         
         if(req.session.user!=null){
@@ -123,18 +118,22 @@ try{
         res.sendFile(path.join(__dirname, "../application/html/index.html"));
     })
     
+    server.get("/viewVotes",isAdmin ,(req, res) => {
+        res.sendFile(path.join(__dirname, "../application/html/viewVotes.html"));
+    })
+    
     server.get("/voting", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/voting.html"));
     })
-
+    
     server.get("/profile", (req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/profile.html"));
     })
-
-    server.get("/manage-voting", (req, res) => {
+    
+    server.get("/manage-voting",isAdmin ,(req, res) => {
         res.sendFile(path.join(__dirname, "../application/html/manageVotings.html"));
     })
-
+    
     server.get("/api/logout", (req, res) => {
         if (req.session) {
             req.session.destroy((err) => {
@@ -160,12 +159,12 @@ try{
                 res.status(406).json({ Error: "Invalid token!" }); 
                 return;
             }
-
+            
             const { method, originalUrl, ip } = req;
             const timestamp = new Date().toISOString();
             const user = req.session.user || {};
             const { oib = 'N/A', email = 'N/A', type = 'N/A' } = user;
-
+            
             logger.info(`JWT valid | Time: ${timestamp} | Method: ${method} | Path: ${originalUrl} | OIB: ${oib} | Email: ${email} | Role: ${type} | IP: ${ip}`);
             
             next(); 
@@ -175,23 +174,24 @@ try{
     });
     
     server.get("/api/current-user", restUser.getCurrentUser.bind(restUser));
-
+    
     server.get("/api/user/totp/enabled/:oib", restUser.getTotpStatus.bind(restUser));
     server.post("/api/user/totp/enable/:oib", restUser.enableTotp.bind(restUser));
     server.post("/api/user/totp/disable/:oib", restUser.disableTotp.bind(restUser));
     server.get("/api/user/role", restUser.getUserRole.bind(restUser));
-
+    
     const restPost = new RESTpost();
     server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
-    server.post("/api/posts/new-post", restPost.postNewPost.bind(restPost));
-    server.put("/api/posts-admin/:postId", restPost.deletePost.bind(restPost));
-    server.get("/api/posts-admin", restPost.getAllPostsPaginated.bind(restPost));
     server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
-    server.post("/api/posts/toggle:postId", restPost.toggleIsActive.bind(restPost));
+    server.post("/api/posts/new-post",isAdmin ,restPost.postNewPost.bind(restPost));
+    server.put("/api/posts-admin/:postId",isAdmin ,restPost.deletePost.bind(restPost));
+    server.get("/api/posts-admin",isAdmin ,restPost.getAllPostsPaginated.bind(restPost));
+    server.post("/api/posts/toggle:postId",isAdmin ,restPost.toggleIsActive.bind(restPost));
     
     const restChoice = new RESTchoices();
-    server.post("/api/posts/new-choice", restChoice.postNewChoice.bind(restChoice));
-    server.get("/api/stats", restChoice.getVoteStats.bind(restChoice));
+    server.post("/api/posts/new-choice",isAdmin ,restChoice.postNewChoice.bind(restChoice));
+    server.get("/api/stats", isAdmin, restChoice.getVoteStats.bind(restChoice));
+    server.get("/api/choices", restChoice.getChoicesByPost.bind(restChoice));
 
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);

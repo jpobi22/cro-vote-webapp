@@ -2,7 +2,6 @@ class RESTnavigation {
     static navigations = {
         admin: [
             { LinkName: "Home", link: "/" },
-            { LinkName: "Voting", link: "/voting" },
             { LinkName: "Manage votings", link: "/manage-voting" },
             { LinkName: "About us", link: "/about-us" },
             { LinkName: "Privacy policy", link: "/privacy-policy" },
@@ -11,7 +10,6 @@ class RESTnavigation {
         ],
         voter: [
             { LinkName: "Home", link: "/" },
-            { LinkName: "Voting", link: "/voting" },
             { LinkName: "About us", link: "/about-us" },
             { LinkName: "Privacy policy", link: "/privacy-policy" },
             { LinkName: "Profile", link: "/profile" },
