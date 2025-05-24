@@ -122,7 +122,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     
     function updatePagination() {
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        if(totalPages === 0){
+            totalPages = 1;
+        }
+        pageInfo.textContent = `Page ${currentPage} od ${totalPages}`;
         prevBtn.disabled = currentPage <= 1;
         nextBtn.disabled = currentPage >= totalPages;
     }

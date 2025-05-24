@@ -69,11 +69,11 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     const res = await fetch(`/api/posts/${postId}`, {
-    headers: {
-        "Authorization": jwtData.token,
-        "Accept": "application/json"
-    }
-});
+        headers: {
+            "Authorization": jwtData.token,
+            "Accept": "application/json"
+        }
+    });
 
 
     const postData = await res.json();
