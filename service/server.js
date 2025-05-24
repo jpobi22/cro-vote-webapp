@@ -195,7 +195,8 @@ try{
         logger.info('HTTP preusmjerivač pokrenut na portu 8080');
     });
     const restVote = new RESTvote();
-server.post("/api/submit-vote", restVote.submitVote.bind(restVote));
+    server.post("/api/submit-vote", restVote.submitVote.bind(restVote));
+    server.get("/api/user/voted-posts", restVote.getVotedPostIds.bind(restVote));
 
 }
 catch(err){

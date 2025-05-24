@@ -32,6 +32,29 @@ class RESTvote {
             res.status(500).json({ error: "Server error." });
         }
     }
+    async getVotedPostIds(req, res) {
+    res.type("application/json");
+
+    try {
+        const user = req.session.user;
+        if (!user || !user.oib) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const result = await this.voteDAO.db.executeQuery(
+            "SELECT post_id FROM user_post WHERE user_oib = ?",
+            [user.oib]
+        );
+
+        const votedPostIds = result.map(row => row.post_id);
+        res.status(200).json({ votedPostIds });
+
+    } catch (err) {
+        console.error("Error fetching voted post IDs:", err);
+        res.status(500).json({ error: "Server error." });
+    }
+}
+
 }
 
 module.exports = RESTvote;
