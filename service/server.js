@@ -184,6 +184,7 @@ try{
     const restPost = new RESTpost();
     server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
     server.post("/api/posts/new-post", restPost.postNewPost.bind(restPost));
+    server.put("/api/posts-admin/:postId", restPost.deletePost.bind(restPost));
     server.get("/api/posts-admin", restPost.getAllPostsPaginated.bind(restPost));
     server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
     server.post("/api/posts/toggle:postId", restPost.toggleIsActive.bind(restPost));

@@ -6,7 +6,7 @@ class choicesDAO {
     }
 
     async getChoicesByPost(postId) {
-        return await this.db.executeQuery("SELECT * FROM choices WHERE post_id = ?", [postId]);
+        return await this.db.executeQuery(` SELECT c.* FROM choices c JOIN post p ON c.post_id = p.id WHERE c.post_id = ? AND p.isDeleted IS NULL`, [postId]);
     }
     
     async postNewChoice(name, post_id) {

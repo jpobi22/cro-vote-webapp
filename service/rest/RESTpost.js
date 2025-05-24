@@ -85,6 +85,29 @@ class RESTpost {
         const result = await this.postDAO.postNewPost(name, description);
         res.status(201).json({ message: "Post created successfully", id: result });
     }
+
+    async deletePost(req, res) {
+        res.type("application/json");
+    
+        const postId = parseInt(req.params.postId, 10);
+    
+        if (isNaN(postId)) {
+            return res.status(400).json({ error: "Invalid postId" });
+        }
+    
+        const now = new Date();
+        const time = now.toISOString().slice(0, 19).replace("T", " ");
+
+    
+        const result = await this.postDAO.deletePost(time, postId);
+    
+        if (result && result.affectedRows > 0) {
+            res.status(200).json({ message: "Post successfully marked as deleted." });
+        } else {
+            res.status(500).json({ error: "Failed to mark post as deleted." });
+        }
+    }
+    
 }
 
 module.exports = RESTpost;
