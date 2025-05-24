@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if(totalPages === 0){
             totalPages = 1;
         }
-        pageInfo.textContent = `Page ${currentPage} od ${totalPages}`;
+        pageInfo.textContent = `Stranica ${currentPage} od ${totalPages}`;
         prevBtn.disabled = currentPage <= 1;
         nextBtn.disabled = currentPage >= totalPages;
     }
