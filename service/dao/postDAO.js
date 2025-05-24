@@ -33,23 +33,6 @@ class PostDAO {
         return await this.db.executeQuery(sql, [id]);
     }
 
-    async getVoteStats(id) {
-        const sql = `SELECT 
-                    c.name AS choiceName, 
-                    COUNT(up.choices_id) AS voteCount,
-                    (SELECT COUNT(*) FROM user_post WHERE post_id = ?) AS totalVotes
-                    FROM 
-                        choices c
-                    LEFT JOIN 
-                        user_post up ON c.id = up.choices_id
-                    WHERE 
-                        c.post_id = ?
-                    GROUP BY 
-                        c.id;
-                    `;
-        return await this.db.executeQuery(sql, [id, id]);
-    }
-
     async postNewPost(name, description) {
         const sql = `INSERT INTO post (name, description, isActive) VALUES (?, ?, 0);`;
         const result = await this.db.executeQuery(sql, [name, description]);

@@ -13,7 +13,6 @@ const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
 const RESTchoices = require("./rest/RESTchoices.js");
 
-
 const server = express();
 const port = 8000;
 const startUrl = "https://localhost:";
@@ -47,7 +46,7 @@ try{
         saveUninitialized: false,
         cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'None' }
     }));
-
+    
     const restUser = new RESTuser();
     const restNavigation = new RESTnavigation();
     const restChoices = new RESTchoices();
@@ -189,10 +188,9 @@ try{
     server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
     server.post("/api/posts/toggle:postId", restPost.toggleIsActive.bind(restPost));
     
-    server.get("/api/stats", restPost.getVoteStats.bind(restPost));
-    
     const restChoice = new RESTchoices();
     server.post("/api/posts/new-choice", restChoice.postNewChoice.bind(restChoice));
+    server.get("/api/stats", restChoice.getVoteStats.bind(restChoice));
 
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);

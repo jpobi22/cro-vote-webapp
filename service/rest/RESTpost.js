@@ -1,4 +1,5 @@
 const PostDAO = require("../dao/postDAO.js");
+const { encrypt, decrypt } = require("../modules/crypto");
 
 class RESTpost {
 
@@ -14,9 +15,15 @@ class RESTpost {
 
         const posts = await this.postDAO.getPostsPaginated(limit, offset);
         const total = await this.postDAO.getPostCount();
-
+        
+        const decryptedPosts = posts.map(post => ({
+            ...post,
+            name: decrypt(post.name),
+            description: decrypt(post.description)
+        }));
+        
         res.status(200).json({
-            posts,
+            posts: decryptedPosts,
             total,
             page,
             totalPages: Math.ceil(total / limit)
@@ -27,12 +34,14 @@ class RESTpost {
         const postId = req.params.postId;
         const post = await this.postDAO.getPostById(postId);
         if (post) {
+            post.name = decrypt(post.name);
+            post.description = decrypt(post.description);
             res.status(200).json(post);
-        } 
-        else {
+        } else {
             res.status(404).json({ error: "Post not found" });
         }
     }
+    
 
     async getAllPostsPaginated(req, res) {
         res.type("application/json");
@@ -43,8 +52,14 @@ class RESTpost {
         const posts = await this.postDAO.getAllPostsPaginated(limit, offset);
         const total = await this.postDAO.getAllPostCount();
 
+        const decryptedPosts = posts.map(post => ({
+            ...post,
+            name: decrypt(post.name),
+            description: decrypt(post.description)
+        }));
+        
         res.status(200).json({
-            posts,
+            posts: decryptedPosts,
             total,
             page,
             totalPages: Math.ceil(total / limit)
@@ -62,29 +77,22 @@ class RESTpost {
         res.status(200).json({ message: "Post activation status toggled successfully." });
     }
     
-    async getVoteStats(req, res) {
-
-        const postId = parseInt(req.query.postId, 10);
-
-        if (isNaN(postId)) {
-            return res.status(400).json({ error: "Invalid postId" });
-        }
-        const result = await this.postDAO.getVoteStats(postId);
-        res.status(200).json({ stats: result });
-    }
-
     async postNewPost(req, res) {
         res.type("application/json");
         
         const { name, description } = req.body;
-        
+    
         if (!name || !description) {
             return res.status(400).json({ error: "Missing post name or description" });
         }
     
-        const result = await this.postDAO.postNewPost(name, description);
+        const encryptedName = encrypt(name);
+        const encryptedDescription = encrypt(description);
+    
+        const result = await this.postDAO.postNewPost(encryptedName, encryptedDescription);
         res.status(201).json({ message: "Post created successfully", id: result });
     }
+    
 
     async deletePost(req, res) {
         res.type("application/json");
