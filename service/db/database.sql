@@ -62,7 +62,6 @@ INSERT INTO user_type (id, name) VALUES (1, 'Admin'),(2, 'Voter');
 INSERT INTO user (oib, id_user_type, name, surname, address, phone, email, TOTP_enabled, TOTP_secret_key, password)
 VALUES ('12345678903', 2, 'Ana', 'Anić', 'Ulica 1, Zagreb', '0911234567', 'ana@me.com', 0, 'Not generated!', '$2b$10$jxyZd5pdKQolBvfnJJ7SB.PqPpzZe487G9Go.yZ/O1vKq0CzETZPG'),('00000000001', 1, 'Ivan', 'Ivić', 'Ulica 2, Split', '0922345678', 'peropetar12345678@gmail.com', 0, 'Not generated!', '$2b$10$jxyZd5pdKQolBvfnJJ7SB.PqPpzZe487G9Go.yZ/O1vKq0CzETZPG');
 INSERT INTO post (id, name, description, isActive) VALUES (1, 'Glasanje za predsjednika države', 'Glasaj za svog kandidata.', 1);
-INSERT INTO post (id, name, description, isActive) VALUES (2, 'Glasanje za gradolnačelnika', 'Glasaj za svog kandidata.', 0);
 
 INSERT INTO choices (id, name, post_id) VALUES
 (1, 'Franjo Tuđman', 1),
@@ -75,12 +74,6 @@ VALUES
 ('12345678901', 1, NOW(), 1),
 ('00000000001', 1, NOW(), 3);
 
-INSERT INTO choices (id, name, post_id) VALUES
-(6, 'Franjo Tuđman', 2),
-(7, 'Stjepan Mesić', 2),
-(8, 'Ivo Josipović', 2),
-(9, 'Kolinda Grabar-Kitarović', 2),
-(10, 'Zoran Milanović', 2);
 UNLOCK TABLES;
 
 SELECT 

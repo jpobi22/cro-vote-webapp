@@ -183,12 +183,14 @@ try{
 
     const restPost = new RESTpost();
     server.get("/api/posts", restPost.getPostsPaginated.bind(restPost));
+    server.post("/api/posts/new-post", restPost.postNewPost.bind(restPost));
+    server.post("/api/posts/new-choice", restPost.postNewChoice.bind(restPost));
     server.get("/api/posts-admin", restPost.getAllPostsPaginated.bind(restPost));
     server.get("/api/posts/:postId", restPost.getPostById.bind(restPost));
     server.post("/api/posts/:postId", restPost.toggleIsActive.bind(restPost));
+    
     server.get("/api/stats", restPost.getVoteStats.bind(restPost));
-
-
+    
     https.createServer(credentials, server).listen(port, () => {
         logger.info('Server started at:' + startUrl + port);
         console.log("Server started at: " + startUrl + port);

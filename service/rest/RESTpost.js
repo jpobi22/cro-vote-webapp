@@ -65,7 +65,6 @@ class RESTpost {
     async getVoteStats(req, res) {
 
         const postId = parseInt(req.query.postId, 10);
-        console.log("Fetching stats for postId:", postId);
 
         if (isNaN(postId)) {
             return res.status(400).json({ error: "Invalid postId" });
@@ -74,6 +73,30 @@ class RESTpost {
         res.status(200).json({ stats: result });
     }
 
+    async postNewPost(req, res) {
+        res.type("application/json");
+        
+        const { name, description } = req.body;
+        
+        if (!name || !description) {
+            return res.status(400).json({ error: "Missing post name or description" });
+        }
+    
+        const result = await this.postDAO.postNewPost(name, description);
+        res.status(201).json({ message: "Post created successfully", id: result });
+
+    }
+    
+    
+    async postNewChoice(req, res) {
+        const { name, post_id } = req.body;
+    
+        if (!name || post_id === undefined || post_id === null) {
+            return res.status(400).json({ error: "Missing choice name or post ID" });
+        }
+        const result = await this.postDAO.postNewChoice(name, post_id);
+        res.status(201).json({ message: "Post created successfully", result });
+    }
 }
 
 module.exports = RESTpost;
