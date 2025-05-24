@@ -12,6 +12,7 @@ const RESTuser = require("./rest/RESTuser.js");
 const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
 const RESTchoices = require("./rest/RESTchoices.js");
+const RESTvote = require("./rest/RESTvote.js");
 
 
 const server = express();
@@ -193,7 +194,9 @@ try{
     }).listen(8080, () => {
         logger.info('HTTP preusmjerivač pokrenut na portu 8080');
     });
-    
+    const restVote = new RESTvote();
+server.post("/api/submit-vote", restVote.submitVote.bind(restVote));
+
 }
 catch(err){
     console.log(err);

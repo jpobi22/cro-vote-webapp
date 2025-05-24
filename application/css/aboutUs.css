@@ -4,7 +4,59 @@ main {
     align-items: center;
     padding: 60px 20px;
     min-height: calc(100vh - 200px);
-    background-image: url(/images/pozadina-profile.png);
+    background-image: url(/images/pozadina.png);
     background-size: cover;
     background-position: center;
+}
+
+#about-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+    border: 1px solid #007acc;
+}
+
+h2 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-size: 24px;
+    color: #007acc;
+    margin-top: 20px;
+}
+
+#about-details p, #about-details ul {
+    font-size: 18px;
+    color: #333;
+}
+
+#about-details ul {
+    padding-left: 20px;
+}
+
+#about-details ul li {
+    margin-bottom: 10px;
+}
+
+footer {
+    color: #dc143c;
+    padding: 10px 0;
+    text-align: center;
+    color: white;
+}
+
+footer a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
 }

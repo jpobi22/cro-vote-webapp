@@ -119,32 +119,55 @@ document.addEventListener("DOMContentLoaded", async function() {
     voteButton.textContent = "Submit Vote";
     form.appendChild(voteButton);
     
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        const selectedChoice = form.querySelector('input[name="choice"]:checked');
-        if (selectedChoice) {
-            const voteRes = await fetch(`/api/submit-vote`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": jwtData.token
-                },
-                body: JSON.stringify({
-                    postId: postData.id,
-                    choiceId: selectedChoice.value
-                })
-            });
+   form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-            if (voteRes.ok) {
-                alert("Your vote has been submitted!");
-            } else {
-                alert("There was an error submitting your vote.");
-            }
-        } else {
-            alert("Please select a choice before submitting.");
+    const selectedChoice = form.querySelector('input[name="choice"]:checked');
+    if (!selectedChoice) {
+        alert("Please select a choice before submitting.");
+        return;
+    }
+
+    try {
+        // 🔁 REFRESH JWT token prije svakog slanja
+        const jwtRes = await fetch("/api/getJWT");
+        const jwtData = await jwtRes.json();
+
+        if (!jwtRes.ok || !jwtData.token) {
+            console.error("Neuspjelo dohvaćanje JWT tokena.");
+            alert("Došlo je do greške. Pokušajte ponovno.");
+            return;
         }
-    });
+
+        const voteRes = await fetch(`/api/submit-vote`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": jwtData.token
+            },
+            body: JSON.stringify({
+                postId: postData.id,
+                choiceId: selectedChoice.value
+            })
+        });
+
+        if (voteRes.ok) {
+            alert("Uspješno ste glasali!");
+        } else if (voteRes.status === 409) {
+            alert("Već ste glasali za ovaj post.");
+        } else {
+            const err = await voteRes.json();
+            console.error("Greška pri glasanju:", err);
+            alert("Došlo je do greške pri glasanju.");
+        }
+
+    } catch (error) {
+        console.error("Pogreška tijekom slanja glasa:", error);
+        alert("Greška prilikom slanja glasa.");
+    }
+});
+
+
 
     votingMain.appendChild(form);
 });
