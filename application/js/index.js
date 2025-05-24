@@ -62,55 +62,64 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    async function fetchPosts(page = 1) {
-        const jwtRes = await fetch("/api/getJWT");
-        const jwtData = await jwtRes.json();
+   async function fetchPosts(page = 1) {
+    const jwtRes = await fetch("/api/getJWT");
+    const jwtData = await jwtRes.json();
 
-        if (!jwtRes.ok || !jwtData.token) {
-            throw new Error("Failed to get JWT");
-        }
-    
-        const res = await fetch(`/api/posts?page=${page}`, {
-            headers: {
-                "Authorization": jwtData.token
-            }
-        });
-    
-        const data = await res.json();
-    
-        if (!res.ok) {
-            throw new Error(data.error || "Error fetching posts");
-        }
-    
-        renderPosts(data.posts);
-        currentPage = data.page;
-        totalPages = data.totalPages;
-        updatePagination();
-        
+    if (!jwtRes.ok || !jwtData.token) {
+        throw new Error("Failed to get JWT");
     }
+
+    const [postsRes, votedRes] = await Promise.all([
+        fetch(`/api/posts?page=${page}`, {
+            headers: { "Authorization": jwtData.token }
+        }),
+        fetch(`/api/user/voted-posts`, {
+            headers: { "Authorization": jwtData.token }
+        })
+    ]);
+
+    const postsData = await postsRes.json();
+    const votedData = await votedRes.json();
+
+    if (!postsRes.ok || !votedRes.ok) {
+        throw new Error("Greška pri dohvaćanju podataka.");
+    }
+
+    renderPosts(postsData.posts, votedData.votedPostIds);
+    currentPage = postsData.page;
+    totalPages = postsData.totalPages;
+    updatePagination();
+}
+
     
-    function renderPosts(posts) {
-        postsContainer.innerHTML = "";
-    
-        posts.forEach(post => {
-            const tile = document.createElement("div");
-            tile.className = "tile";
-    
-            const title = document.createElement("h2");
-            title.textContent = post.name;
-            title.addEventListener("click", () => {
+    function renderPosts(posts, votedPostIds) {
+    postsContainer.innerHTML = "";
+
+    posts.forEach(post => {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+
+        if (votedPostIds.includes(post.id)) {
+            tile.style.backgroundColor = "#ccc";  
+            tile.style.opacity = "0.6";
+        }
+
+        const title = document.createElement("h2");
+        title.textContent = post.name;
+        title.addEventListener("click", () => {
             window.location.href = `/voting?postId=${post.id}`;
-            });
-
-            const desc = document.createElement("p");
-            desc.textContent = post.description;
-    
-            tile.appendChild(title);
-            tile.appendChild(desc);
-    
-            postsContainer.appendChild(tile);
         });
-    }
+
+        const desc = document.createElement("p");
+        desc.textContent = post.description;
+
+        tile.appendChild(title);
+        tile.appendChild(desc);
+        postsContainer.appendChild(tile);
+    });
+}
+
     
     function updatePagination() {
         if(totalPages === 0){
