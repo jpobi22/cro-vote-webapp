@@ -1,6 +1,7 @@
 const express = require("express");
 const session=require('express-session');
 const morgan = require('morgan');
+const helmet = require('helmet');
 const https = require('https');
 const http = require('http');
 const logger = require('../log/logger.js');
@@ -31,9 +32,73 @@ const credentials = {
 };
 
 try{
-    server.use(cors());
+    server.use(cors({
+        origin: 'https://localhost',
+        methods: ['GET', 'POST', 'PUT']
+    }));
+    
     server.use(express.json());
     server.use(express.urlencoded({ extended: true }));
+    server.use(helmet.noSniff());
+
+    server.use(helmet.hsts({
+        maxAge: 63072000,
+        includeSubDomains: true,
+        preload: true
+    }));
+
+    server.use(helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+        
+            scriptSrc: [
+            "'self'",
+            "https://cdn.jsdelivr.net",
+            "https://www.google.com",
+            "https://www.gstatic.com"
+            ],
+        
+            styleSrc: [
+            "'self'",
+            "https://fonts.googleapis.com",
+            "'unsafe-inline'"
+            ],
+        
+            fontSrc: [
+            "'self'",
+            "https://fonts.gstatic.com"
+            ],
+        
+            imgSrc: [
+            "'self'",
+            "data:"
+            ],
+        
+            connectSrc: [
+            "'self'",
+            "https://www.google.com",
+            "https://www.gstatic.com"
+            ],
+        
+            frameSrc: [
+            "'self'",
+            "https://www.google.com",
+            "https://www.gstatic.com"
+            ],
+        
+            objectSrc: ["'none'"],
+        
+            upgradeInsecureRequests: [],
+        }
+    }));
+           
+    
+    server.use((req, res, next) => {
+        res.setHeader('Cache-Control', 'no-store');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        next();
+    });
 
     const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', '../../log/logs/all-logging.log'), { flags: 'a' });
     server.use(morgan('combined', { stream: accessLogStream }));
@@ -47,7 +112,7 @@ try{
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'None' }
+        cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'Strict' }
     }));
     
     const restUser = new RESTuser();
@@ -56,6 +121,7 @@ try{
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
     server.use("/images", express.static(path.join(__dirname, "../application/resources/images")));
     server.use("/icons", express.static(path.join(__dirname, "../application/resources/icons")));
+    server.disable("x-powered-by");
     
     server.use((req, res, next) => {
         if (req.protocol === 'http') {
