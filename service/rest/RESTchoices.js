@@ -1,10 +1,10 @@
-const choicesDAO = require("../dao/choicesDAO.js");
+const ChoicesDAO = require("../dao/choicesDAO.js");
 const { encrypt, decrypt } = require("../modules/crypto");
 
 class RESTchoices {
 
     constructor() {
-        this.choicesDAO = new choicesDAO();
+        this.choicesDAO = new ChoicesDAO();
     }
 
     async getChoicesByPost(req, res) {

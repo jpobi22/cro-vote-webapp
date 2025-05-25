@@ -170,7 +170,11 @@ try{
             
             next(); 
         } catch (err) {
-            res.status(422).json({ Error: "Token expired." }); 
+            if (err.name === "TokenExpiredError") {
+                return res.status(422).json({ Error: "Token expired." });
+            }
+            console.error("Unhandled error:", err);
+            return res.status(500).json({ Error: "Internal server error." });
         }
     });
     

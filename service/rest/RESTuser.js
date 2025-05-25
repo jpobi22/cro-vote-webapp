@@ -35,7 +35,7 @@ class RESTuser {
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    var user = {
+    let user = {
         oib,
         name,
         surname,
@@ -189,7 +189,7 @@ async getUserRole(req, res) {
   
     try {
       const user = await this.userDAO.getUserByEmail(oib, email);
-      if (!user || !user[0]?.password) {
+      if (!user?.[0]?.password) {
         res.status(404).json({ error: "User not found." });
         return;
       }
@@ -330,7 +330,7 @@ async getUserRole(req, res) {
   }
   
   async verifyRecaptcha(token) {
-    const secretKey = '6LfW5DUrAAAAAMxNL8u5UVaZ5jNlArl0RKUAuiE0';
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
 
     const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
         method: 'POST',

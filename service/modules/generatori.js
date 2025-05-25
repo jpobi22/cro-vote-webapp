@@ -10,7 +10,7 @@ export function kreirajSHA256(tekst, sol){
 function kreirajSHA256bezSoli (tekst){
 	const hash = crypto.createHash('sha256');
 	hash.write(tekst);
-	var izlaz = hash.digest('hex');
+	let izlaz = hash.digest('hex');
 	hash.end();
 	return izlaz;
 }
@@ -18,7 +18,7 @@ function kreirajSHA256bezSoli (tekst){
 function kreirajSHA256saSoli(tekst, sol){
 	const hash = crypto.createHash('sha256');
 	hash.write(tekst+sol);
-	var izlaz = hash.digest('hex');
+	let izlaz = hash.digest('hex');
 	hash.end();
 	return izlaz;
 }

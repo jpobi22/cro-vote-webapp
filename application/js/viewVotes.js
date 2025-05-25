@@ -98,7 +98,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
 
-            const choicesData = await choicesRes.json();
             if (!choicesRes.ok) {
                 console.error("Failed to load choices.");
                 return;

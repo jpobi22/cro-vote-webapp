@@ -69,14 +69,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!jwtRes.ok || !jwtData.token) {
             throw new Error("Failed to get JWT");
         }
-        const roleRes = await fetch("/api/user/role", {
-            headers: {
-                "Authorization": jwtData.token
-            }
-        });
-        
-        const roleData = await roleRes.json();
-        
 
         const res = await fetch(`/api/posts-admin?page=${page}`, {
             headers: {

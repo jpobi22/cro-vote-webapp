@@ -30,13 +30,13 @@
             <h1>Glasanja su ovdje, dobrodošli u aplikaciju!</h1>
             <button id="addPostBtn" class="add-post-button">Nova objava</button>
             <form id="newPostForm" class="hidden-form">
-                <label>Naslov objave:</label>
+                <label for="name">Naslov objave:</label>
                 <input type="text" id="postName" placeholder="Naslov objave" name="name">
                 <div class="error-message" id="postNameError"></div>
-                <label>Opis objave:</label>
+                <label for="description">Opis objave:</label>
                 <textarea id="postDescription" placeholder="Opis objave" name="description"></textarea>
                 <div class="error-message" id="postDescriptionError"></div>
-                <label>Odabiri za glasanje:</label>
+                <label for="choice-input">Odabiri za glasanje:</label>
                 <div id="choicesContainer">
                     <input type="text" class="choice-input" placeholder="Odabir 1">
                     <div class="error-message choice-error"></div>

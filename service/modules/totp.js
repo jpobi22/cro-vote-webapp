@@ -16,8 +16,6 @@ export function provjeriTOTP (uneseniKod, tajniKljuc) {
     period: 60
   });
   console.log("Generirani kod:", kod.otp);
-  if (uneseniKod == kod.otp)
-    return true;
+    return uneseniKod == kod.otp;
 
-  return false;
 }

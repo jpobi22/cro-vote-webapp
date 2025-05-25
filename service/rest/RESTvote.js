@@ -11,7 +11,7 @@ class RESTvote {
     
         try {
             const user = req.session.user;
-            if (!user || !user.oib) {
+            if (!user?.oib) {
                 return res.status(401).json({
                     error: "Unauthorized."
                 });
@@ -60,7 +60,7 @@ class RESTvote {
 
         try {
             const user = req.session.user;
-            if (!user || !user.oib) {
+            if (!user?.oib) {
                 return res.status(401).json({
                     error: "Unauthorized"
                 });
@@ -85,7 +85,7 @@ class RESTvote {
 
         try {
             const user = req.session.user;
-            if (!user || !user.oib) {
+            if (!user?.oib) {
                 return res.status(401).json({
                     error: "Unauthorized."
                 });
