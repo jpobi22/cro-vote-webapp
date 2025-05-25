@@ -94,31 +94,44 @@ document.addEventListener("DOMContentLoaded", function() {
 
     
     function renderPosts(posts, votedPostIds) {
-    postsContainer.innerHTML = "";
+        postsContainer.innerHTML = "";
 
-    posts.forEach(post => {
-        const tile = document.createElement("div");
-        tile.className = "tile";
+        posts.forEach(post => {
+            const tile = document.createElement("div");
+            tile.className = "tile";
 
-        if (votedPostIds.includes(post.id)) {
-            tile.style.backgroundColor = "#ccc";  
-            tile.style.opacity = "0.6";
-        }
+            const title = document.createElement("h2");
+            title.textContent = post.name;
 
-        const title = document.createElement("h2");
-        title.textContent = post.name;
-        title.addEventListener("click", () => {
-            window.location.href = `/voting?postId=${post.id}`;
+            const desc = document.createElement("p");
+            desc.textContent = post.description;
+
+            tile.appendChild(title);
+            tile.appendChild(desc);
+
+            if (votedPostIds.includes(post.id)) {
+                tile.style.backgroundColor = "#ccc";  
+                tile.style.opacity = "0.6";
+
+                title.style.cursor = "not-allowed";
+                title.style.pointerEvents = "none";
+
+                const votedInfo = document.createElement("p");
+                votedInfo.textContent = "Već ste glasali";
+                votedInfo.style.fontWeight = "bold";
+                votedInfo.style.color = "red";
+                tile.appendChild(votedInfo);
+            } else {
+                title.style.cursor = "pointer";
+                title.addEventListener("click", () => {
+                    window.location.href = `/voting?postId=${post.id}`;
+                });
+            }
+
+            postsContainer.appendChild(tile);
         });
+    }
 
-        const desc = document.createElement("p");
-        desc.textContent = post.description;
-
-        tile.appendChild(title);
-        tile.appendChild(desc);
-        postsContainer.appendChild(tile);
-    });
-}
 
     
     function updatePagination() {

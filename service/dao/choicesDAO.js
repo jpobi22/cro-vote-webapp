@@ -1,6 +1,6 @@
 let DB = require("../db/database.js");
 
-class choicesDAO {
+class ChoicesDAO {
     constructor() {
         this.db = new DB();
     }
@@ -32,4 +32,4 @@ class choicesDAO {
     }
 }
 
-module.exports = choicesDAO;
+module.exports = ChoicesDAO;

@@ -1,6 +1,7 @@
 const express = require("express");
 const session=require('express-session');
 const morgan = require('morgan');
+const helmet = require('helmet');
 const https = require('https');
 const http = require('http');
 const logger = require('../log/logger.js');
@@ -14,9 +15,10 @@ const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
 const RESTchoices = require("./rest/RESTchoices.js");
 const RESTvote = require("./rest/RESTvote.js");
+require('dotenv').config();
 
 const server = express();
-const port = 8000;
+const port = process.env.PORT;
 const startUrl = "https://localhost:";
 
 const privateKey = fs.readFileSync(path.join(__dirname, '../certificates/private.key'), 'utf8');
@@ -30,9 +32,73 @@ const credentials = {
 };
 
 try{
-    server.use(cors());
+    server.use(cors({
+        origin: 'https://localhost',
+        methods: ['GET', 'POST', 'PUT']
+    }));
+    
     server.use(express.json());
     server.use(express.urlencoded({ extended: true }));
+    server.use(helmet.noSniff());
+
+    server.use(helmet.hsts({
+        maxAge: 63072000,
+        includeSubDomains: true,
+        preload: true
+    }));
+
+    server.use(helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+        
+            scriptSrc: [
+            "'self'",
+            "https://cdn.jsdelivr.net",
+            "https://www.google.com",
+            "https://www.gstatic.com"
+            ],
+        
+            styleSrc: [
+            "'self'",
+            "https://fonts.googleapis.com",
+            "'unsafe-inline'"
+            ],
+        
+            fontSrc: [
+            "'self'",
+            "https://fonts.gstatic.com"
+            ],
+        
+            imgSrc: [
+            "'self'",
+            "data:"
+            ],
+        
+            connectSrc: [
+            "'self'",
+            "https://www.google.com",
+            "https://www.gstatic.com"
+            ],
+        
+            frameSrc: [
+            "'self'",
+            "https://www.google.com",
+            "https://www.gstatic.com"
+            ],
+        
+            objectSrc: ["'none'"],
+        
+            upgradeInsecureRequests: [],
+        }
+    }));
+           
+    
+    server.use((req, res, next) => {
+        res.setHeader('Cache-Control', 'no-store');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        next();
+    });
 
     const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', '../../log/logs/all-logging.log'), { flags: 'a' });
     server.use(morgan('combined', { stream: accessLogStream }));
@@ -43,10 +109,10 @@ try{
     server.use(session(
     { 
         name:'SessionCookie',
-        secret: 'e20ed240083408e2d7019f461ee205f28814fbfab11d1d3196',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'None' }
+        cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'Strict' }
     }));
     
     const restUser = new RESTuser();
@@ -55,6 +121,7 @@ try{
     server.use("/js", express.static(path.join(__dirname, "../application/js")));
     server.use("/images", express.static(path.join(__dirname, "../application/resources/images")));
     server.use("/icons", express.static(path.join(__dirname, "../application/resources/icons")));
+    server.disable("x-powered-by");
     
     server.use((req, res, next) => {
         if (req.protocol === 'http') {
@@ -106,7 +173,7 @@ try{
         
         if(req.session.user!=null){
             const korisnik = { oib: req.session.user.oib };
-            const token = createToken({ korisnik }, "kkkkkkkkkkkkkkkkkkkk");
+            const token = createToken({ korisnik }, process.env.JWT_SECRET);
             res.status(200).json({ token: `Bearer ${token}` });
         }
         else{
@@ -153,7 +220,7 @@ try{
     
     server.all(/(.*)/, (req, res, next) => {
         try {    
-            const tokenValid = checkToken(req, "kkkkkkkkkkkkkkkkkkkk");
+            const tokenValid = checkToken(req, process.env.JWT_SECRET);
             
             if (!tokenValid) {
                 res.status(406).json({ Error: "Invalid token!" }); 
@@ -169,7 +236,11 @@ try{
             
             next(); 
         } catch (err) {
-            res.status(422).json({ Error: "Token expired." }); 
+            if (err.name === "TokenExpiredError") {
+                return res.status(422).json({ Error: "Token expired." });
+            }
+            console.error("Unhandled error:", err);
+            return res.status(500).json({ Error: "Internal server error." });
         }
     });
     
@@ -208,6 +279,9 @@ try{
     const restVote = new RESTvote();
     server.post("/api/submit-vote", restVote.submitVote.bind(restVote));
     server.get("/api/user/voted-posts", restVote.getVotedPostIds.bind(restVote));
+    server.post("/api/vote/hash", restVote.generateVoteHash.bind(restVote));
+    server.get("/has-voted", restVote.hasUserVoted.bind(restVote));
+
 
 }
 catch(err){

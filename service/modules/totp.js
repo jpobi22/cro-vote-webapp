@@ -12,12 +12,10 @@ export function kreirajTajniKljuc (korime) {
 export function provjeriTOTP (uneseniKod, tajniKljuc) {
   const kod = TOTP.generate(tajniKljuc, {
     digits: 6,
-    algorithm: "SHA-512",
+    algorithm: process.env.TOTP_ALGORITM,
     period: 60
   });
   console.log("Generirani kod:", kod.otp);
-  if (uneseniKod == kod.otp)
-    return true;
+    return uneseniKod == kod.otp;
 
-  return false;
 }

@@ -1,24 +1,24 @@
 class RESTnavigation {
     static navigations = {
         admin: [
-            { LinkName: "Home", link: "/" },
-            { LinkName: "Manage votings", link: "/manage-voting" },
-            { LinkName: "About us", link: "/about-us" },
-            { LinkName: "Privacy policy", link: "/privacy-policy" },
-            { LinkName: "Profile", link: "/profile" },
-            { LinkName: "Logout", link: "/api/logout" }
+            { LinkName: "Glasanja", link: "/" },
+            { LinkName: "Upravljanje glasanjima", link: "/manage-voting" },
+            { LinkName: "O nama", link: "/about-us" },
+            { LinkName: "Politika privatnosti", link: "/privacy-policy" },
+            { LinkName: "Profil", link: "/profile" },
+            { LinkName: "Odjava", link: "/api/logout" }
         ],
         voter: [
-            { LinkName: "Home", link: "/" },
-            { LinkName: "About us", link: "/about-us" },
-            { LinkName: "Privacy policy", link: "/privacy-policy" },
-            { LinkName: "Profile", link: "/profile" },
-            { LinkName: "Logout", link: "/api/logout" }
+            { LinkName: "Glasanja", link: "/" },
+            { LinkName: "O nama", link: "/about-us" },
+            { LinkName: "Politika privatnosti", link: "/privacy-policy" },
+            { LinkName: "Profil", link: "/profile" },
+            { LinkName: "Odjava", link: "/api/logout" }
         ],
         guest: [
-            { LinkName: "Login", link: "/login" },
-            { LinkName: "About us", link: "/about-us" },
-            { LinkName: "Privacy policy", link: "/privacy-policy" }
+            { LinkName: "Prijava", link: "/login" },
+            { LinkName: "O nama", link: "/about-us" },
+            { LinkName: "Politika privatnosti", link: "/privacy-policy" }
         ]
     };
 
@@ -27,9 +27,9 @@ class RESTnavigation {
             const type = req.session?.user?.type;
             let navigation;
 
-            if (type == "Admin") {
+            if (type == process.env.ADMINISTRATION_TYPE) {
                 navigation = RESTnavigation.navigations.admin;
-            } else if (type == "Voter") {
+            } else if (type == process.env.REGULAR_TYPE) {
                 navigation = RESTnavigation.navigations.voter;
             } else {
                 navigation = RESTnavigation.navigations.guest;
