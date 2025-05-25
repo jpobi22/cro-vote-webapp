@@ -113,6 +113,40 @@ class RESTvote {
             });
         }
     }
+
+    async hasUserVoted(req, res) {
+        res.type("application/json");
+    
+        try {
+            const user = req.session.user;
+            if (!user?.oib) {
+                return res.status(401).json({
+                    error: "Unauthorized."
+                });
+            }
+    
+            const { postId } = req.query;
+    
+            if (!postId) {
+                return res.status(400).json({
+                    error: "Missing postId."
+                });
+            }
+    
+            const alreadyVoted = await this.voteDAO.userAlreadyVoted(user.oib, postId);
+    
+            res.status(200).json({
+                hasVoted: alreadyVoted
+            });
+    
+        } catch (err) {
+            console.error("Error checking vote status:", err);
+            res.status(500).json({
+                error: "Server error."
+            });
+        }
+    }
+    
     
 }
 

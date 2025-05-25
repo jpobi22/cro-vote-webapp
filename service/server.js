@@ -280,6 +280,8 @@ try{
     server.post("/api/submit-vote", restVote.submitVote.bind(restVote));
     server.get("/api/user/voted-posts", restVote.getVotedPostIds.bind(restVote));
     server.post("/api/vote/hash", restVote.generateVoteHash.bind(restVote));
+    server.get("/has-voted", restVote.hasUserVoted.bind(restVote));
+
 
 }
 catch(err){
