@@ -27,9 +27,9 @@ class RESTnavigation {
             const type = req.session?.user?.type;
             let navigation;
 
-            if (type == "Admin") {
+            if (type == process.env.ADMINISTRATION_TYPE) {
                 navigation = RESTnavigation.navigations.admin;
-            } else if (type == "Voter") {
+            } else if (type == process.env.REGULAR_TYPE) {
                 navigation = RESTnavigation.navigations.voter;
             } else {
                 navigation = RESTnavigation.navigations.guest;

@@ -14,9 +14,10 @@ const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
 const RESTchoices = require("./rest/RESTchoices.js");
 const RESTvote = require("./rest/RESTvote.js");
+require('dotenv').config();
 
 const server = express();
-const port = 8000;
+const port = process.env.PORT;
 const startUrl = "https://localhost:";
 
 const privateKey = fs.readFileSync(path.join(__dirname, '../certificates/private.key'), 'utf8');
@@ -43,7 +44,7 @@ try{
     server.use(session(
     { 
         name:'SessionCookie',
-        secret: 'e20ed240083408e2d7019f461ee205f28814fbfab11d1d3196',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: { secure: true, expires: new Date(Date.now() + 3600000), sameSite: 'None' }
@@ -106,7 +107,7 @@ try{
         
         if(req.session.user!=null){
             const korisnik = { oib: req.session.user.oib };
-            const token = createToken({ korisnik }, "kkkkkkkkkkkkkkkkkkkk");
+            const token = createToken({ korisnik }, process.env.JWT_SECRET);
             res.status(200).json({ token: `Bearer ${token}` });
         }
         else{
@@ -153,7 +154,7 @@ try{
     
     server.all(/(.*)/, (req, res, next) => {
         try {    
-            const tokenValid = checkToken(req, "kkkkkkkkkkkkkkkkkkkk");
+            const tokenValid = checkToken(req, process.env.JWT_SECRET);
             
             if (!tokenValid) {
                 res.status(406).json({ Error: "Invalid token!" }); 
