@@ -3,11 +3,11 @@
 
 ## Project team
 
-Name and surname | E-mail | JMBAG | Github username
-------------  | ------------------- | ----- | ---------------------
-Jan Pobi | jpobi22@student.foi.hr | 0016159939 | jpobi22
-Marin Grabovac | mgrabovac22@student.foi.hr | 0016160653 | mgrabovac22
-Lucija Polak | lpolak22@student.foi.hr | 0016158151 | lpolak22
+Name and surname | E-mail | Github username
+------------  | ------------------- | ---------------------
+Jan Pobi | jpobi22@student.foi.hr |  jpobi22
+Marin Grabovac | mgrabovac22@student.foi.hr  | mgrabovac22
+Lucija Polak | lpolak22@student.foi.hr |  lpolak22
 
 ## Secure Online Voting System project specifications
 
