@@ -4,7 +4,7 @@ main {
     align-items: center;
     padding: 60px 20px;
     min-height: calc(100vh - 200px);
-    background-image: url(/images/pozadina-profile.png);
+    background-image: url(/images/background.png);
     background-size: cover;
     background-position: center;
 }
