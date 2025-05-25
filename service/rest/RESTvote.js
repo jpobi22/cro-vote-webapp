@@ -66,12 +66,8 @@ class RESTvote {
                 });
             }
 
-            const result = await this.voteDAO.db.executeQuery(
-                "SELECT post_id FROM user_post WHERE user_oib = ?",
-                [user.oib]
-            );
-
-            const votedPostIds = result.map(row => row.post_id);
+            const votedPostIds = await this.voteDAO.getVotedPostIds(user.oib);
+            
             res.status(200).json({
                 votedPostIds
             });
