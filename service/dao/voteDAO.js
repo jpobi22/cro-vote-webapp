@@ -13,12 +13,19 @@ class VoteDAO {
         return result[0].count > 0;
     }
 
-   async insertVote(oib, postId, choiceId) {
+   async insertVote(oib, postId, choiceId, signature) {
     return await this.db.executeQuery(
-        "INSERT INTO user_post (user_oib, post_id, choices_id, voted_time) VALUES (?, ?, ?, NOW())",
-        [oib, postId, choiceId]
+        "INSERT INTO user_post (user_oib, post_id, choices_id, voted_time, signature) VALUES (?, ?, ?, NOW(), ?)",
+        [oib, postId, choiceId, signature]
     );
-}
+    
+    }
+    async verifyVoteSignature(oib, postId) {
+        return await this.db.executeQuery(
+            "SELECT choices_id, signature FROM user_post WHERE user_oib = ? AND post_id = ?",
+            [oib, postId]
+        );
+    }
 
 }
 

@@ -128,7 +128,6 @@ form.addEventListener("submit", async (e) => {
     const messageDiv = document.createElement("div");
     messageDiv.style.marginTop = "10px";
 
-    // Ukloni prethodnu poruku ako postoji
     const oldMessage = form.querySelector(".vote-message");
     if (oldMessage) oldMessage.remove();
 
@@ -167,6 +166,23 @@ form.addEventListener("submit", async (e) => {
             messageDiv.textContent = "Uspješno ste glasali!";
             messageDiv.style.color = "green";
             voteButton.disabled = true;
+
+            const verifyRes = await fetch("/api/user/verify-signature", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": jwtData.token
+                },
+                body: JSON.stringify({ postId: postData.id })
+            });
+        
+            const verifyData = await verifyRes.json();
+            if (verifyRes.ok) {
+                console.log("Potpis validan:", verifyData.success);
+            } else {
+                console.error("Greška u verifikaciji:", verifyData.error);
+            }
+            
             setTimeout(() => {
                 window.location.href = "/";
             }, 3000);

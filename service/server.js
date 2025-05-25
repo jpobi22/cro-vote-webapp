@@ -14,6 +14,7 @@ const RESTpost = require("./rest/RESTpost.js");
 const RESTnavigation = require("./rest/RESTnavigation.js");
 const RESTchoices = require("./rest/RESTchoices.js");
 const RESTvote = require("./rest/RESTvote.js");
+require('dotenv').config();
 
 const server = express();
 const port = 8000;
@@ -208,6 +209,7 @@ try{
     const restVote = new RESTvote();
     server.post("/api/submit-vote", restVote.submitVote.bind(restVote));
     server.get("/api/user/voted-posts", restVote.getVotedPostIds.bind(restVote));
+    server.post("/api/user/verify-signature", restVote.verifyVoteSignature.bind(restVote));
 
 }
 catch(err){
