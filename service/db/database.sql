@@ -45,7 +45,6 @@ CREATE TABLE `cro_voting`.`user_post`(
   `post_id` INTEGER NOT NULL,
   `voted_time` DATETIME,
   `choices_id` INTEGER,
-  `signature` VARCHAR(255),
   PRIMARY KEY(`post_id`,`user_oib`),
   CONSTRAINT `fk_user_post_user1`
     FOREIGN KEY(`user_oib`)

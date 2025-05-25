@@ -1,15 +1,14 @@
 const VoteDAO = require("../dao/voteDAO.js");
-const crypto = require('crypto');
+const bcrypt = require("bcrypt");
 
 class RESTvote {
     constructor() {
         this.voteDAO = new VoteDAO();
-        this.secret = process.env.SECRET_KEY_HMAC;
     }
 
     async submitVote(req, res) {
         res.type("application/json");
-
+    
         try {
             const user = req.session.user;
             if (!user || !user.oib) {
@@ -17,31 +16,37 @@ class RESTvote {
                     error: "Unauthorized."
                 });
             }
-
-            const {
-                choiceId,
-                postId
-            } = req.body;
-            if (!choiceId || !postId) {
+    
+            const { choiceId, postId, signature } = req.body;
+    
+            if (!choiceId || !postId || !signature) {
                 return res.status(400).json({
                     error: "Missing data."
                 });
             }
-
+    
             const alreadyVoted = await this.voteDAO.userAlreadyVoted(user.oib, postId);
             if (alreadyVoted) {
                 return res.status(409).json({
                     error: "Already voted."
                 });
             }
-
-            const signature = this.generateVoteSignature(user.oib, postId, choiceId);
-
-            await this.voteDAO.insertVote(user.oib, postId, choiceId, signature);
+    
+            const dataToVerify = `${user.oib}:${postId}:${choiceId}`;
+            const isValidSignature = await bcrypt.compare(dataToVerify, signature);
+    
+            if (!isValidSignature) {
+                return res.status(403).json({
+                    error: "Invalid signature."
+                });
+            }
+    
+            await this.voteDAO.insertVote(user.oib, postId, choiceId);
+    
             res.status(200).json({
                 success: "Vote recorded."
             });
-
+    
         } catch (err) {
             console.error("Error in submitVote:", err);
             res.status(500).json({
@@ -49,6 +54,7 @@ class RESTvote {
             });
         }
     }
+
     async getVotedPostIds(req, res) {
         res.type("application/json");
 
@@ -77,39 +83,38 @@ class RESTvote {
             });
         }
     }
-    generateVoteSignature(oib, postId, choiceId) {
-        const data = `${oib}:${postId}:${choiceId}`;
-        return crypto.createHmac('sha256', this.secret).update(data).digest('hex');
-    }
 
-    async verifyVoteSignature(req, res) {
+    async generateVoteHash(req, res) {
         res.type("application/json");
-    
+
         try {
             const user = req.session.user;
-            const { postId } = req.body;
-    
-            if (!user || !user.oib || !postId) {
-                return res.status(400).json({ error: "Missing data." });
+            if (!user || !user.oib) {
+                return res.status(401).json({
+                    error: "Unauthorized."
+                });
             }
-    
-            const result = await this.voteDAO.verifyVoteSignature(user.oib, postId);
-            if (result.length === 0) {
-                return res.status(404).json({ error: "No vote found." });
+
+            const { idVote, choiceId } = req.body;
+            if (!idVote) {
+                return res.status(400).json({
+                    error: "Missing idVote in request body."
+                });
             }
-    
-            const { choices_id, signature } = result[0];
-            const expected = this.generateVoteSignature(user.oib, postId, choices_id);
-    
-            if (signature !== expected) {
-                return res.status(400).json({ error: "Vote integrity compromised." });
-            }
-    
-            return res.status(200).json({ success: "Vote verified." });
-    
+
+            const saltRounds = 10;
+            const dataToHash = `${user.oib}:${idVote}:${choiceId}`;
+            const hashed = await bcrypt.hash(dataToHash, saltRounds);
+
+            res.status(200).json({
+                hash: hashed
+            });
+
         } catch (err) {
-            console.error("Error verifying vote signature:", err);
-            return res.status(500).json({ error: "Server error." });
+            console.error("Error generating vote hash:", err);
+            res.status(500).json({
+                error: "Server error."
+            });
         }
     }
     

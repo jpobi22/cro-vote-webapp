@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const algorithm = "aes-256-gcm";
-const secretKey = crypto.createHash("sha256").update(process.env.SECRET_KEY || "he1L0.t41s-i$-43Y-t0-0ur,4pP").digest();
+const secretKey = crypto.createHash("sha256").update("he1L0.t41s-i$-43Y-t0-0ur,4pP").digest();
 
 function encrypt(text) {
   const iv = crypto.randomBytes(12);
